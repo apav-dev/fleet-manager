@@ -6,7 +6,7 @@
   "license": "BSD-3-Clause",
   "type": "module",
   "scripts": {
-    "dev": "source ./.yextrc && yext init $YEXT_ACCT_ID && yext pages build && yext pages generate-test-data && yext pages dev",
+    "dev": "source ./.yextrc && yext init $YEXT_ACCT_ID && yext pages build && yext pages generate-test-data && pages dev",
     "build:local": "pages build",
     "build": "yext pages build && yext pages generate-test-data && yext pages render",
     "build:serve": "npm run build && yext pages serve",
@@ -21,9 +21,13 @@
     "node": ">=17"
   },
   "dependencies": {
+    "@heroicons/react": "^2.0.17",
+    "@yext/search-headless-react": "^2.1.0",
+    "@yext/search-ui-react": "^1.1.0",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
-    "tailwind-merge": "^1.6.2"
+    "react-icons": "^4.8.0",
+    "tailwind-merge": "^1.12.0"
   },
   "devDependencies": {
     "@types/react": "^17.0.49",
