@@ -9,3 +9,4 @@ sites-config/features.json
 *.local
 
 .DS_Store
+\.env

@@ -9,7 +9,6 @@ import {
 } from "@yext/pages";
 import Main from "../layouts/Main";
 import Form from "../components/FleetForm";
-import Heading from "../components/Heading";
 import FleetIcon from "../icons/FleetIcon";
 
 export const getPath: GetPath<TemplateRenderProps> = () => {
@@ -20,7 +19,7 @@ export const getHeadConfig: GetHeadConfig<
   TemplateRenderProps
 > = (): HeadConfig => {
   return {
-    title: "Yext Schema Builder",
+    title: "Yext Fleet Manager",
     charset: "UTF-8",
     viewport: "width=device-width, initial-scale=1",
   };
