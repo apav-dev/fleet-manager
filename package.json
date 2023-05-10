@@ -10,6 +10,7 @@
     "build:local": "pages build",
     "build": "yext pages build && yext pages generate-test-data && yext pages render",
     "build:serve": "npm run build && yext pages serve",
+    "b:s": "yext pages build && yext pages serve",
     "serve": "yext pages serve",
     "features": "pages generate features",
     "fmt": "prettier -w .",
