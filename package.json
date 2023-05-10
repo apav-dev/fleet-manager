@@ -6,10 +6,11 @@
   "license": "BSD-3-Clause",
   "type": "module",
   "scripts": {
-    "dev": "source ./.yextrc && yext init $YEXT_ACCT_ID && yext pages build && yext pages generate-test-data && yext pages dev",
+    "dev": "source ./.yextrc && yext init $YEXT_ACCT_ID && yext pages build && yext pages generate-test-data && pages dev",
     "build:local": "pages build",
     "build": "yext pages build && yext pages generate-test-data && yext pages render",
     "build:serve": "npm run build && yext pages serve",
+    "b:s": "yext pages build && yext pages serve",
     "serve": "yext pages serve",
     "features": "pages generate features",
     "fmt": "prettier -w .",
@@ -21,6 +22,7 @@
     "node": ">=17"
   },
   "dependencies": {
+    "random": "^4.1.0",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "tailwind-merge": "^1.6.2"
