@@ -10,6 +10,10 @@ import {
 import Main from "../layouts/Main";
 import Form from "../components/FleetForm";
 import FleetIcon from "../icons/FleetIcon";
+import FleetDeploy from "../components/FleetDeploy";
+import useHash from "../hooks/useHash";
+import { useEffect, useState } from "react";
+import TransitionContainer from "../components/TransitionContainer";
 
 export const getPath: GetPath<TemplateRenderProps> = () => {
   return `index.html`;
@@ -26,6 +30,18 @@ export const getHeadConfig: GetHeadConfig<
 };
 
 const FleetManager: Template<TemplateRenderProps> = () => {
+  const hash = useHash();
+
+  const [showDeploy, setShowDeploy] = useState(false);
+
+  useEffect(() => {
+    if (hash === "#deploying" && !showDeploy) {
+      setShowDeploy(true);
+      // remove hash from url
+      window.history.replaceState(null, "", window.location.pathname);
+    }
+  }, [hash]);
+
   return (
     <Main>
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
@@ -34,7 +50,10 @@ const FleetManager: Template<TemplateRenderProps> = () => {
           Yext Fleet Manager
         </h2>
       </div>
-      <Form />
+      {!showDeploy && <Form />}
+      <TransitionContainer show={showDeploy}>
+        <FleetDeploy />
+      </TransitionContainer>
     </Main>
   );
 };
