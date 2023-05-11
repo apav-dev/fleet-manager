@@ -5,11 +5,44 @@ import { twMerge } from "tailwind-merge";
 import { XCircleIcon } from "@heroicons/react/24/outline";
 import { FaSpaceShuttle } from "react-icons/fa";
 import Container from "./Container";
+import { useMutation } from "@tanstack/react-query";
+
+type Subaccount = {
+  subAccountId: string;
+};
+
+const deployFleet = async (subAccounts: Subaccount[]) => {
+  try {
+    const response = await fetch(
+      // TODO: update endpoint
+      `http://localhost:8000/api/deploy`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(subAccounts),
+        // TODO: ask about this
+        mode: "no-cors",
+      }
+    );
+    // return response.json();
+  } catch (e) {
+    console.error(e);
+  }
+};
 
 const FleetForm = () => {
   const [selectedSubAccountIds, setSelectedSubAccountIds] = useState<string[]>(
     []
   );
+
+  const deployFleetMutation = useMutation({
+    mutationFn: () =>
+      deployFleet(
+        selectedSubAccountIds.map((said) => ({ subAccountId: said }))
+      ),
+  });
 
   const handleSubAccountIdSelect = (params: OnSelectParams) => {
     const said = params.newFilter.value as string;
@@ -22,8 +55,9 @@ const FleetForm = () => {
     );
   };
 
-  const handleDeploy = (e: React.FormEvent) => {
+  const handleDeploy = async (e: React.FormEvent) => {
     e.preventDefault();
+    await deployFleetMutation.mutateAsync();
     window.location.hash = "deploying";
   };
 

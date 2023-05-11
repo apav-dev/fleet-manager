@@ -10,7 +10,7 @@ import { twMerge } from "tailwind-merge";
 import { MdOutlineDoNotDisturb } from "react-icons/Md";
 import ProgressBar from "./ProgressBar";
 
-const timeline: { accountId: string; status: Status }[] = [
+const timeline: { accountId: string; status: DeployStatus }[] = [
   {
     accountId: "6728502",
     status: "deploy_complete",
@@ -53,7 +53,7 @@ const timeline: { accountId: string; status: Status }[] = [
   },
 ];
 
-type Status =
+type DeployStatus =
   | "rar_submitted"
   | "rar_submission_failure"
   | "rar_complete"
@@ -75,7 +75,7 @@ const FleetDeploy = () => {
     };
   }, []);
 
-  const renderAccountStatusIcon = (status: Status) => {
+  const renderAccountStatusIcon = (status: DeployStatus) => {
     switch (status) {
       case "deploy_complete":
         return <AiOutlineCheckCircle className="h-8 w-8 text-green-500" />;
@@ -88,7 +88,7 @@ const FleetDeploy = () => {
     }
   };
 
-  const renderRarStatus = (status: Status) => {
+  const renderRarStatus = (status: DeployStatus) => {
     switch (status) {
       case "rar_complete":
       case "deploy_complete":
@@ -120,7 +120,7 @@ const FleetDeploy = () => {
     }
   };
 
-  const renderDeployStatusIcon = (status: Status) => {
+  const renderDeployStatusIcon = (status: DeployStatus) => {
     switch (status) {
       case "deploy_complete":
         return (

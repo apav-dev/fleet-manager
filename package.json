@@ -27,6 +27,7 @@
     "@headlessui/react": "^1.7.14",
     "@heroicons/react": "^2.0.17",
     "@mui/material": "^5.12.3",
+    "@tanstack/react-query": "^4.29.5",
     "@yext/search-headless-react": "^2.1.0",
     "@yext/search-ui-react": "^1.1.0",
     "react": "^17.0.2",
