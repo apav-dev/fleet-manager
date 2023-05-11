@@ -7,6 +7,7 @@ class Response {
     this.body = body;
     this.headers = headers || {
       "Content-Type": "application/json",
+      "Access-Control-Allow-Origin": "http://localhost:5173",
     };
     this.statusCode = statusCode;
   }

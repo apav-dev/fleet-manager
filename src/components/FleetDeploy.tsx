@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import Container from "./Container";
 import Stat from "./Stat";
 import { CgSpinner } from "react-icons/cg";
@@ -9,49 +9,7 @@ import {
 import { twMerge } from "tailwind-merge";
 import { MdOutlineDoNotDisturb } from "react-icons/Md";
 import ProgressBar from "./ProgressBar";
-
-const timeline: { accountId: string; status: DeployStatus }[] = [
-  {
-    accountId: "6728502",
-    status: "deploy_complete",
-  },
-  {
-    accountId: "6728500",
-    status: "rar_failure",
-  },
-  {
-    accountId: "6728499",
-    status: "deploy_complete",
-  },
-  {
-    accountId: "6728498",
-    status: "deploy_complete",
-  },
-  {
-    accountId: "6728497",
-    status: "deploy_failure",
-  },
-  {
-    accountId: "6728496",
-    status: "rar_submitted",
-  },
-  {
-    accountId: "6728495",
-    status: "rar_submitted",
-  },
-  {
-    accountId: "6728494",
-    status: "rar_submitted",
-  },
-  {
-    accountId: "6728493",
-    status: "rar_submitted",
-  },
-  {
-    accountId: "6728492",
-    status: "rar_submitted",
-  },
-];
+import { useQuery } from "@tanstack/react-query";
 
 type DeployStatus =
   | "rar_submitted"
@@ -61,19 +19,78 @@ type DeployStatus =
   | "deploy_failure"
   | "deploy_complete";
 
-const FleetDeploy = () => {
-  const [progress, setProgress] = React.useState(10);
+const fetchFleetStatuses = async (): Promise<
+  {
+    accountId: string;
+    status: DeployStatus;
+  }[]
+> => {
+  const response = await fetch(
+    // TODO: update endpoint
+    `http://localhost:8000/api/deploys`
+  );
+  return response.json();
+};
 
-  React.useEffect(() => {
-    const timer = setInterval(() => {
-      setProgress((prevProgress) =>
-        prevProgress >= 100 ? 10 : prevProgress + 10
-      );
-    }, 800);
-    return () => {
-      clearInterval(timer);
-    };
-  }, []);
+const FleetDeploy = () => {
+  const [totalDeploys, setTotalDeploys] = useState(0);
+  const [deployProgress, setDeployProgress] = useState(0);
+  const [successfulDeploys, setSuccessfulDeploys] = useState(0);
+  const [failedDeploys, setFailedDeploys] = useState(0);
+  const [accounts, setAccounts] = useState<Record<string, DeployStatus>>({});
+
+  const { data } = useQuery({
+    queryKey: ["accountStatuses"],
+    queryFn: fetchFleetStatuses,
+    refetchInterval: 1000,
+    onSuccess: () => {
+      calculateProgress();
+    },
+  });
+
+  useEffect(() => {
+    if (data) {
+      // if the length of the data array is greater than the length of the accounts array (meaning there are new accounts) then set the accounts array to the data array
+      if (data?.length > Object.keys(accounts).length) {
+        const newAccounts = data.reduce((acc, curr) => {
+          return { ...acc, [curr.accountId]: curr.status };
+        }, {});
+        setAccounts(newAccounts);
+      } else {
+        // for each account in data, check if the status has changed. If it has, update the accounts object
+        const newAccountStatuses = data.reduce((acc, curr) => {
+          if (accounts[curr.accountId] !== curr.status) {
+            return { ...acc, [curr.accountId]: curr.status };
+          }
+          return acc;
+        }, {});
+        setAccounts({ ...accounts, ...newAccountStatuses });
+      }
+    }
+  }, [data]);
+
+  const calculateProgress = () => {
+    setTotalDeploys(data?.length || 0);
+    let progress = 0;
+    let successes = 0;
+    let failures = 0;
+    data?.forEach((event) => {
+      if (event.status === "deploy_complete") {
+        successes++;
+        progress++;
+      } else if (
+        event.status === "deploy_failure" ||
+        event.status === "rar_failure" ||
+        event.status === "rar_submission_failure"
+      ) {
+        failures++;
+        progress++;
+      }
+    });
+    setDeployProgress(progress);
+    setSuccessfulDeploys(successes);
+    setFailedDeploys(failures);
+  };
 
   const renderAccountStatusIcon = (status: DeployStatus) => {
     switch (status) {
@@ -146,15 +163,15 @@ const FleetDeploy = () => {
             <p className="font-medium text-gray-900">Deploy Cancelled</p>
           </div>
         );
-      default:
+      case "rar_complete":
         return (
           <div className="flex items-center space-x-3">
-            <AiOutlineCheckCircle className="h-8 w-8 text-green-500" />
-            <p className="font-medium text-gray-900">
-              Site Successfully Deployed!
-            </p>
+            <CgSpinner className="h-8 w-8 text-gray-400 animate-spin" />
+            <p className="font-medium text-gray-900">Deploying Site...</p>
           </div>
         );
+      default:
+        return <></>;
     }
   };
 
@@ -166,21 +183,30 @@ const FleetDeploy = () => {
           <Stat
             key="successful_deploys"
             label="Successful Deploys"
-            value="3/10"
+            value={`${successfulDeploys}/${totalDeploys}`}
           />
-          <Stat key="failed_deploys" label="Failed Deploys" value="2/10" />
-          <Stat key="success_%" label="Success %" value="60%" />
+          <Stat
+            key="failed_deploys"
+            label="Failed Deploys"
+            value={`${failedDeploys}/${totalDeploys}`}
+          />
+          {/* TODO: Update */}
+          <Stat
+            key="success_%"
+            label="Success %"
+            value={`${successfulDeploys / totalDeploys}%`}
+          />
         </dl>
       </div>
       <div className="my-8">
-        <ProgressBar progress={progress} total={100} />
+        <ProgressBar progress={deployProgress} total={data?.length || 0} />
       </div>
       <div className="flow-root mt-10 h-96 overflow-y-auto p-4 border rounded-lg shadow">
         <ul role="list" className="-mb-8">
-          {timeline.map((event, eventIdx) => (
-            <li key={event.accountId}>
+          {Object.entries(accounts).map(([accountId, status], eventIdx) => (
+            <li key={accountId}>
               <div className="relative pb-8">
-                {eventIdx !== timeline.length - 1 ? (
+                {eventIdx !== Object.entries(accounts).length - 1 ? (
                   <span
                     className="absolute left-4 top-4 -ml-px h-full w-0.5 bg-gray-200"
                     aria-hidden="true"
@@ -189,7 +215,7 @@ const FleetDeploy = () => {
                 <div className="relative flex space-x-3">
                   <div>
                     <span className="h-8 w-8 rounded-full flex items-center justify-center ring-8 ring-white bg-white">
-                      {renderAccountStatusIcon(event.status)}
+                      {renderAccountStatusIcon(status)}
                     </span>
                   </div>
                   <div className="flex min-w-0 flex-1 justify-between space-x-4 pt-1.5">
@@ -197,19 +223,19 @@ const FleetDeploy = () => {
                       <p
                         className={twMerge(
                           "font-medium text-gray-900",
-                          event.status === "rar_submitted" && "text-gray-400"
+                          status === "rar_submitted" && "text-gray-400"
                         )}
                       >
-                        {event.accountId}
+                        {accountId}
                       </p>
                     </div>
                   </div>
                 </div>
-                {event.status !== "rar_submitted" &&
-                  event.status !== "rar_submission_failure" && (
+                {status !== "rar_submitted" &&
+                  status !== "rar_submission_failure" && (
                     <div className="ml-8 my-4 space-y-2">
-                      {renderRarStatus(event.status)}
-                      {renderDeployStatusIcon(event.status)}
+                      {renderRarStatus(status)}
+                      {renderDeployStatusIcon(status)}
                     </div>
                   )}
               </div>

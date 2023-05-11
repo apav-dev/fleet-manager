@@ -20,6 +20,7 @@ class Response {
     this.body = body;
     this.headers = headers || {
       "Content-Type": "application/json",
+      "Access-Control-Allow-Origin": "http://localhost:5173",
     };
     this.statusCode = statusCode;
   }
@@ -69,11 +70,17 @@ type HttpMethod =
 
 type KVMethod = "hget" | "hset" | "hgetall" | "del";
 
-type RarStatus = "rar_submitted" | "rar_submission_failure";
+type DeployStatus =
+  | "rar_submitted"
+  | "rar_submission_failure"
+  | "rar_complete"
+  | "rar_failure"
+  | "deploy_failure"
+  | "deploy_complete";
 
 type Account = {
   accountId: string;
-  status: RarStatus;
+  status: DeployStatus;
 };
 
 const kvRequest = async (
@@ -118,7 +125,7 @@ const clearAccountHash = async (accountId: string) => {
 const setAccountHashValue = async (
   parentAccountId: string,
   subAccountId: string,
-  status: RarStatus
+  status: DeployStatus
 ) => {
   const response = await kvRequest(
     "POST",
@@ -185,8 +192,9 @@ async function handlePost(body, businessId) {
     );
   }
 
-  const accounts: Account[] = [];
+  const accountStatuses: Account[] = [];
 
+  // Send off request for each account to Yext
   const deployPromises = accts.map(async (acct) => {
     try {
       const siteBody = buildSiteRequestBody(acct);
@@ -208,18 +216,19 @@ async function handlePost(body, businessId) {
     }
   });
 
+  // Check if the requests succeeded or failed and update the account Statuses list accordingly
   await Promise.allSettled(deployPromises).then((results) => {
     results.forEach((result) => {
       if (result.status === "fulfilled") {
         const statusCode = result.value.statusCode;
         const jsonResponse = JSON.parse(result.value.body);
         if (statusCode === 200) {
-          accounts.push({
+          accountStatuses.push({
             accountId: jsonResponse.response.targetAccountId,
             status: "rar_submitted",
           });
         } else {
-          accounts.push({
+          accountStatuses.push({
             accountId: jsonResponse.targetAccountId,
             status: "rar_submission_failure",
           });
@@ -230,10 +239,12 @@ async function handlePost(body, businessId) {
     });
   });
 
-  const hashPromises = await accounts.map((account) => {
+  // Update the KV store with the account statuses
+  const hashPromises = accountStatuses.map((account) => {
     setAccountHashValue(businessId, account.accountId, account.status);
   });
 
+  // Wait for all the hash promises to resolve
   await Promise.allSettled(hashPromises).then((results) => {
     results.forEach((result) => {
       if (result.status === "rejected") {
