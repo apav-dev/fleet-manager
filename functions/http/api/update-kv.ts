@@ -176,7 +176,7 @@ const setAccountHashValue = async (
   Accepts a Webhook payload from Yext
 * GET Request: Not implemented
 */
-const updateKV = (request) => {
+const updateKV = async (request) => {
   const { body, method } = request;
 
   if (method !== "POST") {
@@ -195,24 +195,22 @@ const updateKV = (request) => {
     case "RESOURCE_APPLY_REQUEST_COMPLETE":
       // webhookPayload.meta.accountId will be present for RAR Successes
       subAccountId = webhookPayload.meta.accountId as string;
-      setAccountHashValue("3873282", subAccountId, "rar_complete");
+      await setAccountHashValue("3873282", subAccountId, "rar_complete");
       break;
     case "DEPLOY_COMPLETE":
       // webhookPayload.meta.appSpecificAccountId will NOT BE present for deploy completes
       subAccountId = webhookPayload.deploy?.businessName?.split("-")[3];
-      console.log(subAccountId);
-      // setAccountHashValue("3873282", subAccountId, "deploy_complete");
-      console.log("Deploy Complete");
+      await setAccountHashValue("3873282", subAccountId, "deploy_complete");
       break;
     case "RESOURCE_APPLY_REQUEST_FAILURE":
       // webhookPayload.meta.accountId will be present for RAR Failures
       subAccountId = webhookPayload.meta.accountId as string;
-      setAccountHashValue("3873282", subAccountId, "rar_failure");
+      await setAccountHashValue("3873282", subAccountId, "rar_failure");
       break;
     case "DEPLOY_FAILURE":
       // webhookPayload.meta.accountId will be present for RAR Failures
       subAccountId = webhookPayload.meta.accountId as string;
-      setAccountHashValue("3873282", subAccountId, "deploy_failure");
+      await setAccountHashValue("3873282", subAccountId, "deploy_failure");
       break;
     default:
       return new Response("Event type not supported", null, 400);

@@ -10,6 +10,7 @@ import { twMerge } from "tailwind-merge";
 import { MdOutlineDoNotDisturb } from "react-icons/Md";
 import ProgressBar from "./ProgressBar";
 import { useQuery } from "@tanstack/react-query";
+import TransitionContainer from "./TransitionContainer";
 
 type DeployStatus =
   | "rar_submitted"
@@ -38,6 +39,7 @@ const FleetDeploy = () => {
   const [successfulDeploys, setSuccessfulDeploys] = useState(0);
   const [failedDeploys, setFailedDeploys] = useState(0);
   const [accounts, setAccounts] = useState<Record<string, DeployStatus>>({});
+  const [complete, setComplete] = useState(false);
 
   const { data } = useQuery({
     queryKey: ["accountStatuses"],
@@ -87,6 +89,9 @@ const FleetDeploy = () => {
         progress++;
       }
     });
+    if (progress === totalDeploys) {
+      setComplete(true);
+    }
     setDeployProgress(progress);
     setSuccessfulDeploys(successes);
     setFailedDeploys(failures);
@@ -178,71 +183,73 @@ const FleetDeploy = () => {
   // TODO: hyperlink to account
   return (
     <Container>
-      <div>
-        <dl className="mt-5 grid grid-cols-1 gap-5 sm:grid-cols-3">
-          <Stat
-            key="successful_deploys"
-            label="Successful Deploys"
-            value={`${successfulDeploys}/${totalDeploys}`}
-          />
-          <Stat
-            key="failed_deploys"
-            label="Failed Deploys"
-            value={`${failedDeploys}/${totalDeploys}`}
-          />
-          {/* TODO: Update */}
-          <Stat
-            key="success_%"
-            label="Success %"
-            value={`${successfulDeploys / totalDeploys}%`}
-          />
-        </dl>
-      </div>
-      <div className="my-8">
-        <ProgressBar progress={deployProgress} total={data?.length || 0} />
-      </div>
-      <div className="flow-root mt-10 h-96 overflow-y-auto p-4 border rounded-lg shadow">
-        <ul role="list" className="-mb-8">
-          {Object.entries(accounts).map(([accountId, status], eventIdx) => (
-            <li key={accountId}>
-              <div className="relative pb-8">
-                {eventIdx !== Object.entries(accounts).length - 1 ? (
-                  <span
-                    className="absolute left-4 top-4 -ml-px h-full w-0.5 bg-gray-200"
-                    aria-hidden="true"
-                  />
-                ) : null}
-                <div className="relative flex space-x-3">
-                  <div>
-                    <span className="h-8 w-8 rounded-full flex items-center justify-center ring-8 ring-white bg-white">
-                      {renderAccountStatusIcon(status)}
-                    </span>
-                  </div>
-                  <div className="flex min-w-0 flex-1 justify-between space-x-4 pt-1.5">
+      <TransitionContainer show={totalDeploys > 0}>
+        <div>
+          <dl className="mt-5 grid grid-cols-1 gap-5 sm:grid-cols-3">
+            <Stat
+              key="successful_deploys"
+              label="Successful Deploys"
+              value={`${successfulDeploys}/${totalDeploys}`}
+            />
+            <Stat
+              key="failed_deploys"
+              label="Failed Deploys"
+              value={`${failedDeploys}/${totalDeploys}`}
+            />
+            {/* TODO: Update */}
+            <Stat
+              key="success_%"
+              label="Success %"
+              value={`${(successfulDeploys / totalDeploys) * 100}%`}
+            />
+          </dl>
+        </div>
+        <div className="my-8">
+          <ProgressBar progress={deployProgress} total={data?.length || 0} />
+        </div>
+        <div className="flow-root mt-10 h-96 overflow-y-auto p-4 border rounded-lg shadow">
+          <ul role="list" className="-mb-8">
+            {Object.entries(accounts).map(([accountId, status], eventIdx) => (
+              <li key={accountId}>
+                <div className="relative pb-8">
+                  {eventIdx !== Object.entries(accounts).length - 1 ? (
+                    <span
+                      className="absolute left-4 top-4 -ml-px h-full w-0.5 bg-gray-200"
+                      aria-hidden="true"
+                    />
+                  ) : null}
+                  <div className="relative flex space-x-3">
                     <div>
-                      <p
-                        className={twMerge(
-                          "font-medium text-gray-900",
-                          status === "rar_submitted" && "text-gray-400"
-                        )}
-                      >
-                        {accountId}
-                      </p>
+                      <span className="h-8 w-8 rounded-full flex items-center justify-center ring-8 ring-white bg-white">
+                        {renderAccountStatusIcon(status)}
+                      </span>
+                    </div>
+                    <div className="flex min-w-0 flex-1 justify-between space-x-4 pt-1.5">
+                      <div>
+                        <p
+                          className={twMerge(
+                            "font-medium text-gray-900",
+                            status === "rar_submitted" && "text-gray-400"
+                          )}
+                        >
+                          {accountId}
+                        </p>
+                      </div>
                     </div>
                   </div>
+                  {status !== "rar_submitted" &&
+                    status !== "rar_submission_failure" && (
+                      <div className="ml-8 my-4 space-y-2">
+                        {renderRarStatus(status)}
+                        {renderDeployStatusIcon(status)}
+                      </div>
+                    )}
                 </div>
-                {status !== "rar_submitted" &&
-                  status !== "rar_submission_failure" && (
-                    <div className="ml-8 my-4 space-y-2">
-                      {renderRarStatus(status)}
-                      {renderDeployStatusIcon(status)}
-                    </div>
-                  )}
-              </div>
-            </li>
-          ))}
-        </ul>
-      </div>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </TransitionContainer>
     </Container>
   );
 };

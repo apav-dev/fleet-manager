@@ -155,6 +155,9 @@ function buildSiteRequestBody(siteBody: SubAccountSiteConfig) {
   // subAccountId is also called partner id in the platform
   const stripped = subAccountId.trim();
 
+  // random number 5 digits long
+  const randomNumber = Math.floor(Math.random() * 100000);
+
   const body = {
     targetAccountId: stripped,
     source: {
@@ -163,8 +166,8 @@ function buildSiteRequestBody(siteBody: SubAccountSiteConfig) {
         siteConfigRepoUrl ||
         "https://github.com/lambdaFun94/cac-pages-yextsite-config",
       variables: {
-        siteId: siteId || `site-id-12345`,
-        siteName: siteName || `API Deployed Site`,
+        siteId: siteId || `site-id-${randomNumber}`,
+        siteName: siteName || `API Deployed Site ${randomNumber}`,
         repoId: repoId || "basic-locations-repo-fleet",
         gitHubUrl: gitHubUrl || "github.com/lambdaFun94/basic-locations-site",
       },
