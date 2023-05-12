@@ -42,6 +42,7 @@ const FleetDeploy = () => {
     queryKey: ["accountStatuses"],
     queryFn: fetchFleetStatuses,
     refetchInterval: 1000,
+    enabled: !complete,
     onSuccess: () => {
       calculateProgress();
     },
@@ -67,6 +68,12 @@ const FleetDeploy = () => {
       }
     }
   }, [data]);
+
+  useEffect(() => {
+    if (totalDeploys > 0 && deployProgress === totalDeploys) {
+      setComplete(true);
+    }
+  }, [deployProgress]);
 
   const calculateProgress = () => {
     setTotalDeploys(data?.length || 0);
