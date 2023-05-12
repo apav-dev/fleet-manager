@@ -6,8 +6,8 @@ import {
   AiOutlineCheckCircle,
   AiOutlineExclamationCircle,
 } from "react-icons/ai";
+import { FaBan } from "react-icons/fa";
 import { twMerge } from "tailwind-merge";
-import { MdOutlineDoNotDisturb } from "react-icons/Md";
 import ProgressBar from "./ProgressBar";
 import { useQuery } from "@tanstack/react-query";
 import TransitionContainer from "./TransitionContainer";
@@ -161,7 +161,7 @@ const FleetDeploy = () => {
       case "rar_submission_failure":
         return (
           <div className="flex items-center space-x-3">
-            <MdOutlineDoNotDisturb className="h-8 w-8 text-gray-400" />
+            <FaBan className="h-8 w-8 text-gray-400" />
             <p className="font-medium text-gray-900">Deploy Cancelled</p>
           </div>
         );
