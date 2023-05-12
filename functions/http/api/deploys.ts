@@ -8,6 +8,7 @@ class Response {
     this.headers = headers || {
       "Content-Type": "application/json",
       "Access-Control-Allow-Origin": "http://localhost:5173",
+      "Cache-Control": "no-cache, no-store, must-revalidate",
     };
     this.statusCode = statusCode;
   }
