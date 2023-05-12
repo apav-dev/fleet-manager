@@ -199,7 +199,7 @@ const FleetDeploy = () => {
               <Stat
                 key="success_%"
                 label="Success %"
-                value={`${(successfulDeploys / totalDeploys) * 100}%`}
+                value={`${(successfulDeploys / deployProgress) * 100}%`}
               />
             </dl>
           </div>
