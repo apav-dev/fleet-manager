@@ -26,10 +26,7 @@ const fetchFleetStatuses = async (): Promise<
     status: DeployStatus;
   }[]
 > => {
-  const response = await fetch(
-    // TODO: update endpoint
-    `http://localhost:8000/api/deploys`
-  );
+  const response = await fetch(`/api/deploys`);
   return response.json();
 };
 

@@ -13,20 +13,13 @@ type Subaccount = {
 
 const deployFleet = async (subAccounts: Subaccount[]) => {
   try {
-    const response = await fetch(
-      // TODO: update endpoint
-      `http://localhost:8000/api/deploy`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(subAccounts),
-        // TODO: ask about this
-        mode: "no-cors",
-      }
-    );
-    // return response.json();
+    await fetch(`/api/deploy`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(subAccounts),
+    });
   } catch (e) {
     console.error(e);
   }
