@@ -29,6 +29,7 @@ const FleetForm = () => {
   const [selectedSubAccountIds, setSelectedSubAccountIds] = useState<string[]>(
     []
   );
+  const [template, setTemplate] = useState("");
 
   const deployFleetMutation = useMutation({
     mutationFn: () =>
@@ -56,6 +57,62 @@ const FleetForm = () => {
 
   return (
     <Container>
+      <section aria-labelledby="products-heading" className="mb-8">
+        <h2 id="products-heading" className="sr-only">
+          Products
+        </h2>
+        <label
+          htmlFor="password"
+          className="block text-sm font-medium leading-6 text-gray-900"
+        >
+          Select a Template
+        </label>
+
+        <div className="grid mt-2 grid-cols-1 gap-y-10 gap-x-6 sm:grid-cols-2 xl:gap-x-8 h-full">
+          <div
+            onClick={() => setTemplate("orange")}
+            className={twMerge(
+              "border-2 border-transparent p-2 hover:opacity-75",
+              template === "orange" && "border-indigo-600"
+            )}
+          >
+            <div className="w-full overflow-hidden rounded-lg h-80">
+              <iframe
+                src={
+                  "https://qqahwmjhg3-131278-d.sbx.preview.pagescdn.com/6257137882478077830"
+                }
+                className="h-full w-full object-cover object-center"
+              ></iframe>
+            </div>
+            <div className="mt-8 flex items-center justify-between text-base font-medium text-gray-900">
+              <h3>Orange Template</h3>
+              <p>$5</p>
+            </div>
+            <p className="mt-1 text-sm italic text-gray-500">Orange Template</p>
+          </div>
+          <div
+            onClick={() => setTemplate("blue")}
+            className={twMerge(
+              "border-2 border-transparent p-2 hover:opacity-75",
+              template === "blue" && "border-indigo-600"
+            )}
+          >
+            <div className="w-full overflow-hidden rounded-lg h-80">
+              <iframe
+                src={
+                  "https://ipuk5b5pdo-131277-d.sbx.preview.pagescdn.com/4429845563501038261"
+                }
+                className="h-full w-full object-cover object-center group-hover:opacity-75"
+              ></iframe>
+            </div>
+            <div className="mt-8 flex items-center justify-between text-base font-medium text-gray-900">
+              <h3>Blue Template</h3>
+              <p>$1000000</p>
+            </div>
+            <p className="mt-1 text-sm italic text-gray-500">Blue Template</p>
+          </div>
+        </div>
+      </section>
       <form
         className="space-y-6"
         action="#"

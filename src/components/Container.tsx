@@ -6,7 +6,7 @@ export interface ContainerProps {
 
 const Container = ({ children }: ContainerProps) => {
   return (
-    <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-xl">
+    <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-4xl">
       <div className="bg-white px-6 py-12 shadow sm:rounded-lg sm:px-12">
         {children}
       </div>
