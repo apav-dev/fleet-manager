@@ -93,7 +93,9 @@ const FleetDeploy = () => {
         failures++;
         progress++;
       }
-      setSuccessPercent(`${Math.floor((successes / totalDeploys) * 100)}%`);
+      if (successes > 0 && totalDeploys > 0) {
+        setSuccessPercent(`${Math.floor((successes / totalDeploys) * 100)}%`);
+      }
     });
 
     setDeployProgress(progress);
