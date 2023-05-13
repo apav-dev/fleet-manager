@@ -37,6 +37,7 @@ const FleetDeploy = () => {
   const [failedDeploys, setFailedDeploys] = useState(0);
   const [accounts, setAccounts] = useState<Record<string, DeployStatus>>({});
   const [complete, setComplete] = useState(false);
+  const [successPercent, setSuccessPercent] = useState("0%");
 
   const { data } = useQuery({
     queryKey: ["accountStatuses"],
@@ -92,6 +93,7 @@ const FleetDeploy = () => {
         failures++;
         progress++;
       }
+      setSuccessPercent(`${Math.floor((successes / totalDeploys) * 100)}%`);
     });
 
     setDeployProgress(progress);
@@ -200,15 +202,7 @@ const FleetDeploy = () => {
                 value={`${failedDeploys}/${totalDeploys}`}
               />
               {/* TODO: Update */}
-              <Stat
-                key="success_%"
-                label="Success %"
-                value={
-                  deployProgress > 0 && successfulDeploys > 0
-                    ? `${(successfulDeploys / deployProgress) * 100}%`
-                    : "0%"
-                }
-              />
+              <Stat key="success_%" label="Success %" value={successPercent} />
             </dl>
           </div>
           <div className="my-8">
