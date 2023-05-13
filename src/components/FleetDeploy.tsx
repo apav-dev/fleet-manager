@@ -93,9 +93,7 @@ const FleetDeploy = () => {
         progress++;
       }
     });
-    if (progress === totalDeploys) {
-      setComplete(true);
-    }
+
     setDeployProgress(progress);
     setSuccessfulDeploys(successes);
     setFailedDeploys(failures);
