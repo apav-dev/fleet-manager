@@ -187,7 +187,6 @@ const FleetDeploy = () => {
     <Container>
       {totalDeploys > 0 ? (
         <>
-          {" "}
           <div>
             <dl className="mt-5 grid grid-cols-1 gap-5 sm:grid-cols-3">
               <Stat
@@ -204,7 +203,11 @@ const FleetDeploy = () => {
               <Stat
                 key="success_%"
                 label="Success %"
-                value={`${(successfulDeploys / deployProgress) * 100}%`}
+                value={
+                  deployProgress > 0
+                    ? `${(successfulDeploys / deployProgress) * 100}%`
+                    : "0%"
+                }
               />
             </dl>
           </div>
