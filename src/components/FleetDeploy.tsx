@@ -204,7 +204,7 @@ const FleetDeploy = () => {
                 key="success_%"
                 label="Success %"
                 value={
-                  deployProgress > 0
+                  deployProgress > 0 && successfulDeploys > 0
                     ? `${(successfulDeploys / deployProgress) * 100}%`
                     : "0%"
                 }
