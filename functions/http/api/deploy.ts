@@ -158,8 +158,8 @@ function buildSiteRequestBody(siteBody: SubAccountSiteConfig) {
   // random number 5 digits long
   const randomNumber = Math.floor(Math.random() * 100000);
 
-  // current date time as a string
-  const deployedDate = new Date().toISOString();
+  // current date time as a string in the form 03/04/2023 11:08:26
+  const deployedDate = new Date().toLocaleString();
 
   const body = {
     targetAccountId: stripped,

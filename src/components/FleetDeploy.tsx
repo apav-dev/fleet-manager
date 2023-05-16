@@ -11,7 +11,7 @@ import { twMerge } from "tailwind-merge";
 import ProgressBar from "./ProgressBar";
 import { useQuery } from "@tanstack/react-query";
 import Skeleton from "./Skeleton";
-import { fetchFleetStatuses, fetchSubAccounts } from "../utils/api";
+import { fetchFleetStatuses } from "../utils/api";
 import { DeployStatus } from "../types/types";
 
 interface FleetDeployProps {
