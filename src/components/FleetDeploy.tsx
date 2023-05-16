@@ -11,24 +11,8 @@ import { twMerge } from "tailwind-merge";
 import ProgressBar from "./ProgressBar";
 import { useQuery } from "@tanstack/react-query";
 import Skeleton from "./Skeleton";
-
-type DeployStatus =
-  | "rar_submitted"
-  | "rar_submission_failure"
-  | "rar_complete"
-  | "rar_failure"
-  | "deploy_failure"
-  | "deploy_complete";
-
-const fetchFleetStatuses = async (): Promise<
-  {
-    accountId: string;
-    status: DeployStatus;
-  }[]
-> => {
-  const response = await fetch(`/api/deploys`);
-  return response.json();
-};
+import { fetchFleetStatuses, fetchSubAccounts } from "../utils/api";
+import { DeployStatus } from "../types/types";
 
 const FleetDeploy = () => {
   const [totalDeploys, setTotalDeploys] = useState(0);
@@ -39,7 +23,7 @@ const FleetDeploy = () => {
   const [complete, setComplete] = useState(false);
   const [successPercent, setSuccessPercent] = useState("0%");
 
-  const { data } = useQuery({
+  const accountStatusQuery = useQuery({
     queryKey: ["accountStatuses"],
     queryFn: fetchFleetStatuses,
     refetchInterval: 1000,
@@ -49,26 +33,63 @@ const FleetDeploy = () => {
     },
   });
 
+  const allSubAccountsQuery = useQuery({
+    queryKey: ["subAccounts"],
+    queryFn: fetchSubAccounts,
+  });
+
+  const renderSubAccountLink = (partnerCustomerID: string) => {
+    const subAccounts =
+      allSubAccountsQuery.data?.response.docs[0].c_subAccounts;
+    const subAccount = subAccounts?.find(
+      (subAccount: any) => subAccount.partnerCustomerID === partnerCustomerID
+    );
+    if (subAccount) {
+      return (
+        <a
+          href={`https://www.yext.com/s/${subAccount.yextCustomerID}/home`}
+          target="_blank"
+          rel="noreferrer"
+          className="text-indigo-600 hover:text-indigo-500"
+        >
+          <span>
+            {subAccount.name}
+            {" - "}
+            {subAccount.yextCustomerID}
+          </span>
+        </a>
+      );
+    } else {
+      console.warn(
+        `Could not find subAccount with partnerCustomerID ${partnerCustomerID}`
+      );
+      return <span>{partnerCustomerID}</span>;
+    }
+  };
+
   useEffect(() => {
-    if (data) {
+    if (accountStatusQuery.data) {
       // if the length of the data array is greater than the length of the accounts array (meaning there are new accounts) then set the accounts array to the data array
-      if (data?.length > Object.keys(accounts).length) {
-        const newAccounts = data.reduce((acc, curr) => {
+      if (accountStatusQuery.data?.length > Object.keys(accounts).length) {
+        const newAccounts = accountStatusQuery.data.reduce((acc, curr) => {
           return { ...acc, [curr.accountId]: curr.status };
         }, {});
         setAccounts(newAccounts);
       } else {
         // for each account in data, check if the status has changed. If it has, update the accounts object
-        const newAccountStatuses = data.reduce((acc, curr) => {
-          if (accounts[curr.accountId] !== curr.status) {
-            return { ...acc, [curr.accountId]: curr.status };
-          }
-          return acc;
-        }, {});
+        const newAccountStatuses = accountStatusQuery.data.reduce(
+          (acc, curr) => {
+            if (accounts[curr.accountId] !== curr.status) {
+              return { ...acc, [curr.accountId]: curr.status };
+            }
+            return acc;
+          },
+          {}
+        );
         setAccounts({ ...accounts, ...newAccountStatuses });
       }
     }
-  }, [data]);
+  }, [accountStatusQuery.data]);
 
   useEffect(() => {
     if (totalDeploys > 0 && deployProgress === totalDeploys) {
@@ -77,11 +98,11 @@ const FleetDeploy = () => {
   }, [deployProgress]);
 
   const calculateProgress = () => {
-    setTotalDeploys(data?.length || 0);
+    setTotalDeploys(accountStatusQuery.data?.length || 0);
     let progress = 0;
     let successes = 0;
     let failures = 0;
-    data?.forEach((event) => {
+    accountStatusQuery.data?.forEach((event) => {
       if (event.status === "deploy_complete") {
         successes++;
         progress++;
@@ -186,7 +207,6 @@ const FleetDeploy = () => {
     }
   };
 
-  // TODO: hyperlink to account
   return (
     <Container>
       {totalDeploys > 0 ? (
@@ -208,7 +228,10 @@ const FleetDeploy = () => {
             </dl>
           </div>
           <div className="my-8">
-            <ProgressBar progress={deployProgress} total={data?.length || 0} />
+            <ProgressBar
+              progress={deployProgress}
+              total={accountStatusQuery.data?.length || 0}
+            />
           </div>
           <div className="flow-root mt-10 h-96 overflow-y-auto p-4 border rounded-lg shadow">
             <ul role="list" className="-mb-8">
@@ -235,7 +258,7 @@ const FleetDeploy = () => {
                               status === "rar_submitted" && "text-gray-400"
                             )}
                           >
-                            {accountId}
+                            {renderSubAccountLink(accountId)}
                           </p>
                         </div>
                       </div>

@@ -158,6 +158,9 @@ function buildSiteRequestBody(siteBody: SubAccountSiteConfig) {
   // random number 5 digits long
   const randomNumber = Math.floor(Math.random() * 100000);
 
+  // current date time as a string
+  const deployedDate = new Date().toISOString();
+
   const body = {
     targetAccountId: stripped,
     source: {
@@ -167,7 +170,7 @@ function buildSiteRequestBody(siteBody: SubAccountSiteConfig) {
         "https://github.com/lambdaFun94/cac-pages-yextsite-config",
       variables: {
         siteId: siteId || `site-id-${randomNumber}`,
-        siteName: siteName || `API Deployed Site ${randomNumber}`,
+        siteName: siteName || `API Deployed Site at ${deployedDate}`,
         repoId: repoId || "basic-locations-repo-fleet",
         gitHubUrl: gitHubUrl || "github.com/lambdaFun94/basic-locations-site",
       },

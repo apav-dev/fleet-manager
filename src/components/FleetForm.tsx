@@ -1,29 +1,8 @@
 import React, { useState } from "react";
-import { OnSelectParams } from "@yext/search-ui-react";
-import { FilterSearch } from "@yext/search-ui-react";
 import { twMerge } from "tailwind-merge";
-import { XCircleIcon } from "@heroicons/react/24/outline";
-import { FaSpaceShuttle } from "react-icons/fa";
 import Container from "./Container";
-import { useMutation } from "@tanstack/react-query";
-
-type Subaccount = {
-  subAccountId: string;
-};
-
-const deployFleet = async (subAccounts: Subaccount[]) => {
-  try {
-    await fetch(`/api/deploy`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(subAccounts),
-    });
-  } catch (e) {
-    console.error(e);
-  }
-};
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { deployFleet, fetchSubAccounts } from "../utils/api";
 
 const FleetForm = () => {
   const [selectedSubAccountIds, setSelectedSubAccountIds] = useState<string[]>(
@@ -38,16 +17,10 @@ const FleetForm = () => {
       ),
   });
 
-  const handleSubAccountIdSelect = (params: OnSelectParams) => {
-    const said = params.newFilter.value as string;
-    setSelectedSubAccountIds([...selectedSubAccountIds, said]);
-  };
-
-  const handleRemoveSubAccountId = (said: string) => {
-    setSelectedSubAccountIds(
-      selectedSubAccountIds.filter((selectedSaid) => selectedSaid !== said)
-    );
-  };
+  const { data } = useQuery({
+    queryKey: ["subAccounts"],
+    queryFn: fetchSubAccounts,
+  });
 
   const handleDeploy = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -63,7 +36,7 @@ const FleetForm = () => {
         </h2>
         <label
           htmlFor="password"
-          className="block text-sm font-medium leading-6 text-gray-900"
+          className="block text-base font-semibold leading-6 text-gray-900"
         >
           Select a Template
         </label>
@@ -72,7 +45,7 @@ const FleetForm = () => {
           <div
             onClick={() => setTemplate("orange")}
             className={twMerge(
-              "border-2 border-transparent p-2 hover:opacity-75",
+              "border-2 border-gray-300 p-2 hover:opacity-75",
               template === "orange" && "border-indigo-600"
             )}
           >
@@ -93,7 +66,7 @@ const FleetForm = () => {
           <div
             onClick={() => setTemplate("blue")}
             className={twMerge(
-              "border-2 border-transparent p-2 hover:opacity-75",
+              "border-2 border-gray-300 p-2 hover:opacity-75",
               template === "blue" && "border-indigo-600"
             )}
           >
@@ -120,49 +93,57 @@ const FleetForm = () => {
         onSubmit={handleDeploy}
       >
         <div>
-          <label
-            htmlFor="password"
-            className="block text-sm font-medium leading-6 text-gray-900"
-          >
-            Sub Account IDs
-          </label>
-          <FilterSearch
-            customCssClasses={{
-              filterSearchContainer: "mb-0 mt-2",
-              inputElement:
-                "block w-full rounded-md border-0 h-10 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6",
-            }}
-            searchFields={[
-              {
-                entityType: "ce_subAccount",
-                fieldApiName: "c_saids",
-              },
-            ]}
-            placeholder="Select Subaccount IDs"
-            onSelect={handleSubAccountIdSelect}
-          />
-          <div>
-            <ul role="list" className="divide-y divide-gray-100 pl-2">
-              {selectedSubAccountIds.map((said) => (
-                <li
-                  key={said}
-                  className="flex items-center justify-between gap-x-6 py-5"
-                >
-                  <div className="flex gap-x-4">
-                    <FaSpaceShuttle className="mx-auto h-10 w-auto text-indigo-600 -rotate-90" />
-                    <div className="min-w-0 flex items-center">
-                      <p className="text-sm font-semibold leading-6 text-gray-900">
-                        {said}
-                      </p>
+          <fieldset>
+            <legend className="text-base font-semibold leading-6 text-gray-900">
+              Sub Account Ids
+            </legend>
+            <div className="mt-4 divide-y divide-gray-200 border-b border-t border-gray-200 overflow-auto h-96 px-4">
+              {data?.response.docs[0].c_subAccounts.map(
+                (account, accountIdx) => (
+                  <div
+                    key={accountIdx}
+                    className="relative flex items-start py-4"
+                  >
+                    <div className="min-w-0 flex-1 text-sm leading-6">
+                      <label
+                        htmlFor={`account-${account.yextCustomerID}`}
+                        className="select-none font-medium text-gray-900"
+                      >
+                        <span>
+                          {account.name}{" "}
+                          <span className="text-xs text-gray-500">
+                            {account.yextCustomerID}
+                          </span>
+                        </span>
+                      </label>
+                    </div>
+                    <div className="ml-3 flex h-6 items-center">
+                      <input
+                        id={`account-${account.yextCustomerID}`}
+                        name={`person-${account.yextCustomerID}`}
+                        type="checkbox"
+                        className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600"
+                        onChange={(e) => {
+                          if (e.target.checked) {
+                            setSelectedSubAccountIds([
+                              ...selectedSubAccountIds,
+                              account.partnerCustomerID,
+                            ]);
+                          } else {
+                            setSelectedSubAccountIds(
+                              selectedSubAccountIds.filter(
+                                (said) => said !== account.partnerCustomerID
+                              )
+                            );
+                          }
+                        }}
+                      />
                     </div>
                   </div>
-                  <button onClick={() => handleRemoveSubAccountId(said)}>
-                    <XCircleIcon className="h-6 w-6 text-gray-900 hover:text-gray-500" />
-                  </button>
-                </li>
-              ))}
-            </ul>
-          </div>
+                )
+              )}
+            </div>
+          </fieldset>
         </div>
         <div>
           <button

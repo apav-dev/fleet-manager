@@ -17,3 +17,16 @@
 .secondary-cta {
   @apply bg-sky-700 hover:bg-sky-800;
 }
+
+.scrollbar-left::-webkit-scrollbar {
+  width: 12px;
+}
+
+.scrollbar-left::-webkit-scrollbar-track {
+  background-color: #f7fafc;
+}
+
+.scrollbar-left::-webkit-scrollbar-thumb {
+  background-color: #cbd5e0;
+  border-radius: 6px;
+}
