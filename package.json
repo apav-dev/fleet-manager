@@ -9,7 +9,7 @@
     "dev": "source ./.yextrc && yext init $YEXT_ACCT_ID && yext pages build && yext pages generate-test-data && pages dev",
     "build:local": "pages build",
     "build": "yext pages build && yext pages generate-test-data && yext pages render",
-    "build:serve": "npm run build && yext pages serve",
+    "build:serve": "yext pages build && yext pages serve",
     "b:s": "yext pages build && yext pages serve",
     "serve": "yext pages serve",
     "features": "pages generate features",
