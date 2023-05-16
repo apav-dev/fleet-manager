@@ -14,7 +14,15 @@ import Skeleton from "./Skeleton";
 import { fetchFleetStatuses, fetchSubAccounts } from "../utils/api";
 import { DeployStatus } from "../types/types";
 
-const FleetDeploy = () => {
+interface FleetDeployProps {
+  subAccounts: {
+    name: string;
+    partnerCustomerID: string;
+    yextCustomerID: string;
+  }[];
+}
+
+const FleetDeploy = ({ subAccounts }: FleetDeployProps) => {
   const [totalDeploys, setTotalDeploys] = useState(0);
   const [deployProgress, setDeployProgress] = useState(0);
   const [successfulDeploys, setSuccessfulDeploys] = useState(0);
@@ -33,14 +41,7 @@ const FleetDeploy = () => {
     },
   });
 
-  const allSubAccountsQuery = useQuery({
-    queryKey: ["subAccounts"],
-    queryFn: fetchSubAccounts,
-  });
-
   const renderSubAccountLink = (partnerCustomerID: string) => {
-    const subAccounts =
-      allSubAccountsQuery.data?.response.docs[0].c_subAccounts;
     const subAccount = subAccounts?.find(
       (subAccount: any) => subAccount.partnerCustomerID === partnerCustomerID
     );

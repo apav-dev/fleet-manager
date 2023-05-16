@@ -1,10 +1,18 @@
 import React, { useState } from "react";
 import { twMerge } from "tailwind-merge";
 import Container from "./Container";
-import { useMutation, useQuery } from "@tanstack/react-query";
-import { deployFleet, fetchSubAccounts } from "../utils/api";
+import { useMutation } from "@tanstack/react-query";
+import { deployFleet } from "../utils/api";
 
-const FleetForm = () => {
+interface FleetFormProps {
+  subAccounts: {
+    name: string;
+    partnerCustomerID: string;
+    yextCustomerID: string;
+  }[];
+}
+
+const FleetForm = ({ subAccounts }: FleetFormProps) => {
   const [selectedSubAccountIds, setSelectedSubAccountIds] = useState<string[]>(
     []
   );
@@ -15,11 +23,6 @@ const FleetForm = () => {
       deployFleet(
         selectedSubAccountIds.map((said) => ({ subAccountId: said }))
       ),
-  });
-
-  const { data } = useQuery({
-    queryKey: ["subAccounts"],
-    queryFn: fetchSubAccounts,
   });
 
   const handleDeploy = async (e: React.FormEvent) => {
@@ -98,50 +101,48 @@ const FleetForm = () => {
               Sub Account Ids
             </legend>
             <div className="mt-4 divide-y divide-gray-200 border-b border-t border-gray-200 overflow-auto h-96 px-4">
-              {data?.response.docs[0].c_subAccounts.map(
-                (account, accountIdx) => (
-                  <div
-                    key={accountIdx}
-                    className="relative flex items-start py-4"
-                  >
-                    <div className="min-w-0 flex-1 text-sm leading-6">
-                      <label
-                        htmlFor={`account-${account.yextCustomerID}`}
-                        className="select-none font-medium text-gray-900"
-                      >
-                        <span>
-                          {account.name}{" "}
-                          <span className="text-xs text-gray-500">
-                            {account.yextCustomerID}
-                          </span>
+              {subAccounts.map((account, accountIdx) => (
+                <div
+                  key={accountIdx}
+                  className="relative flex items-start py-4"
+                >
+                  <div className="min-w-0 flex-1 text-sm leading-6">
+                    <label
+                      htmlFor={`account-${account.yextCustomerID}`}
+                      className="select-none font-medium text-gray-900"
+                    >
+                      <span>
+                        {account.name}{" "}
+                        <span className="text-xs text-gray-500">
+                          {account.yextCustomerID}
                         </span>
-                      </label>
-                    </div>
-                    <div className="ml-3 flex h-6 items-center">
-                      <input
-                        id={`account-${account.yextCustomerID}`}
-                        name={`person-${account.yextCustomerID}`}
-                        type="checkbox"
-                        className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600"
-                        onChange={(e) => {
-                          if (e.target.checked) {
-                            setSelectedSubAccountIds([
-                              ...selectedSubAccountIds,
-                              account.partnerCustomerID,
-                            ]);
-                          } else {
-                            setSelectedSubAccountIds(
-                              selectedSubAccountIds.filter(
-                                (said) => said !== account.partnerCustomerID
-                              )
-                            );
-                          }
-                        }}
-                      />
-                    </div>
+                      </span>
+                    </label>
                   </div>
-                )
-              )}
+                  <div className="ml-3 flex h-6 items-center">
+                    <input
+                      id={`account-${account.yextCustomerID}`}
+                      name={`person-${account.yextCustomerID}`}
+                      type="checkbox"
+                      className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600"
+                      onChange={(e) => {
+                        if (e.target.checked) {
+                          setSelectedSubAccountIds([
+                            ...selectedSubAccountIds,
+                            account.partnerCustomerID,
+                          ]);
+                        } else {
+                          setSelectedSubAccountIds(
+                            selectedSubAccountIds.filter(
+                              (said) => said !== account.partnerCustomerID
+                            )
+                          );
+                        }
+                      }}
+                    />
+                  </div>
+                </div>
+              ))}
             </div>
           </fieldset>
         </div>

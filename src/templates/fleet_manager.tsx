@@ -6,6 +6,8 @@ import {
   GetHeadConfig,
   HeadConfig,
   TemplateRenderProps,
+  TransformProps,
+  TemplateProps,
 } from "@yext/pages";
 import Main from "../layouts/Main";
 import Form from "../components/FleetForm";
@@ -14,6 +16,7 @@ import FleetDeploy from "../components/FleetDeploy";
 import useHash from "../hooks/useHash";
 import { useEffect, useState } from "react";
 import TransitionContainer from "../components/TransitionContainer";
+import { fetchSubAccounts } from "../utils/api";
 
 export const getPath: GetPath<TemplateRenderProps> = () => {
   return `index.html`;
@@ -29,7 +32,20 @@ export const getHeadConfig: GetHeadConfig<
   };
 };
 
-const FleetManager: Template<TemplateRenderProps> = () => {
+export const transformProps: TransformProps<TemplateProps> = async (data) => {
+  const subAccountsResponse = await fetchSubAccounts();
+  const subAccounts = subAccountsResponse.response.docs[0].c_subAccounts;
+  return {
+    ...data,
+    document: { ...data.document, subAccounts },
+  };
+};
+
+const FleetManager: Template<TemplateRenderProps> = ({
+  document,
+}: TemplateRenderProps) => {
+  const subAccounts = document.subAccounts;
+
   const hash = useHash();
 
   const [showDeploy, setShowDeploy] = useState(false);
@@ -50,9 +66,9 @@ const FleetManager: Template<TemplateRenderProps> = () => {
           Yext Fleet Manager
         </h2>
       </div>
-      {!showDeploy && <Form />}
+      {!showDeploy && <Form subAccounts={subAccounts} />}
       <TransitionContainer show={showDeploy}>
-        <FleetDeploy />
+        <FleetDeploy subAccounts={subAccounts} />
       </TransitionContainer>
     </Main>
   );

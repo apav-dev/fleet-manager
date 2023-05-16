@@ -1,4 +1,5 @@
 import { DeployStatus, SubAccountEntity, Subaccount } from "../types/types";
+import { fetch } from "@yext/pages/util";
 
 export const deployFleet = async (subAccounts: Subaccount[]) => {
   try {
