@@ -1,11 +1,13 @@
-import React from "react";
+import React, { Suspense } from "react";
 import { useState } from "react";
 import type { Message } from "@yext/chat-core";
 import cx from "classnames";
 import { HandThumbUpIcon, HandThumbDownIcon } from "@heroicons/react/20/solid";
 import { Transition } from "@headlessui/react";
-// import { Markdown } from "@yext/react-components";
-const Markdown = React.lazy(() => import("@yext/react-components"));
+// TODO: Remove and replace with @yext/react-components Markdown component
+import NoSsr from "@mui/base/NoSsr";
+// Import reactmarkdown lazily
+const ReactMarkdown = React.lazy(() => import("react-markdown"));
 
 const formatUglyServerTimestamp = (timestamp: number | string) => {
   if (typeof timestamp === "string") {
@@ -95,13 +97,26 @@ export default function MessageBubble({
               <HandThumbDownIcon className="w-4 h-4 p-1" />
             </button>
           </Transition>
+          {/* TODO: Update when @yext/react-components are working */}
+          {/* <div
+            className={cx(
+              "prose overflow-x-auto",
+              message.source === "BOT" ? "text-gray-900" : "text-white"
+            )}
+          >
+            {/* <Markdown content={messageText} /> */}
+          {/* </div>  */}
           <div
             className={cx(
               "prose overflow-x-auto",
               message.source === "BOT" ? "text-gray-900" : "text-white"
             )}
           >
-            <Markdown content={messageText} />
+            <NoSsr>
+              <Suspense fallback="">
+                <ReactMarkdown>{messageText}</ReactMarkdown>
+              </Suspense>
+            </NoSsr>
           </div>
           {explanation && (
             <div className="text-xs text-gray-600 mt-2 pt-2 border-t border-gray-300">
