@@ -224,7 +224,6 @@ const FleetDeploy = ({ subAccounts }: FleetDeployProps) => {
                 label="Failed Deploys"
                 value={`${failedDeploys}/${totalDeploys}`}
               />
-              {/* TODO: Update */}
               <Stat key="success_%" label="Success %" value={successPercent} />
             </dl>
           </div>

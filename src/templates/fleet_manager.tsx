@@ -17,6 +17,7 @@ import useHash from "../hooks/useHash";
 import { useEffect, useState } from "react";
 import TransitionContainer from "../components/TransitionContainer";
 import { fetchSubAccounts } from "../utils/api";
+import Chat from "../components/Chat";
 
 export const getPath: GetPath<TemplateRenderProps> = () => {
   return `index.html`;
@@ -41,6 +42,8 @@ export const transformProps: TransformProps<TemplateProps> = async (data) => {
   };
 };
 
+type Screen = "select-flow" | "chat" | "select-account" | "deploying";
+
 const FleetManager: Template<TemplateRenderProps> = ({
   document,
 }: TemplateRenderProps) => {
@@ -48,11 +51,23 @@ const FleetManager: Template<TemplateRenderProps> = ({
 
   const hash = useHash();
 
-  const [showDeploy, setShowDeploy] = useState(false);
+  const [screenType, setScreenType] = useState<Screen>("select-flow");
 
   useEffect(() => {
-    if (hash === "#deploying" && !showDeploy) {
-      setShowDeploy(true);
+    if (hash === "#select-flow" && screenType !== "select-flow") {
+      setScreenType("select-flow");
+      // remove hash from url
+      window.history.replaceState(null, "", window.location.pathname);
+    } else if (hash === "#deploying" && screenType !== "deploying") {
+      setScreenType("deploying");
+      // remove hash from url
+      window.history.replaceState(null, "", window.location.pathname);
+    } else if (hash === "#select-account" && screenType !== "select-account") {
+      setScreenType("select-account");
+      // remove hash from url
+      window.history.replaceState(null, "", window.location.pathname);
+    } else if (hash === "#chat" && screenType !== "chat") {
+      setScreenType("chat");
       // remove hash from url
       window.history.replaceState(null, "", window.location.pathname);
     }
@@ -66,9 +81,34 @@ const FleetManager: Template<TemplateRenderProps> = ({
           Yext Fleet Manager
         </h2>
       </div>
-      {!showDeploy && <Form subAccounts={subAccounts} />}
-      <TransitionContainer show={showDeploy}>
+      <TransitionContainer show={screenType === "select-flow"}>
+        <div className="mt-8 flex justify-between sm:mx-auto sm:w-full sm:max-w-md ">
+          <button
+            className="mt-6 w-44 h-20 border-2 rounded-md bg-white font-semibold hover:border-indigo-600"
+            onClick={() => {
+              window.location.hash = "chat";
+            }}
+          >
+            Create New Account
+          </button>
+          <button
+            className="mt-6 w-40 h-20 border-2 rounded-md bg-white font-semibold hover:border-indigo-600"
+            onClick={() => {
+              window.location.hash = "select-account";
+            }}
+          >
+            Deploy Sites
+          </button>
+        </div>
+      </TransitionContainer>
+      <TransitionContainer show={screenType === "select-account"}>
+        <Form subAccounts={subAccounts} />
+      </TransitionContainer>
+      <TransitionContainer show={screenType === "deploying"}>
         <FleetDeploy subAccounts={subAccounts} />
+      </TransitionContainer>
+      <TransitionContainer show={screenType === "chat"}>
+        <Chat />
       </TransitionContainer>
     </Main>
   );
