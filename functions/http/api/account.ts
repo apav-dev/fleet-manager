@@ -101,7 +101,10 @@ async function createSite(body: any, subAccountId) {
     return { data: responses, status: errorResponses.length > 0 ? 500 : 200 }
 }
 
-const handlePost = async (body) => {
+const handlePost = async (body, queryParams) => {
+    console.log(queryParams)
+
+
 
     const parsedBody = JSON.parse(body);
     const newSubAccountId = parsedBody.businessName + '-' + parsedBody.subAccountId;
@@ -110,9 +113,15 @@ const handlePost = async (body) => {
     let createLocationResponse;
     let createSiteResponse;
     try {
-        createAccountResponse = await createSubAccount(parsedBody, newSubAccountId);
-        createLocationResponse = await createLocation(parsedBody, newSubAccountId);
-        createSiteResponse = await createSite(parsedBody, newSubAccountId);
+        if (queryParams?.createAccount !== 'false') {
+            createAccountResponse = await createSubAccount(parsedBody, newSubAccountId);
+        }
+        if (queryParams?.createLocation !== 'false') {
+            createLocationResponse = await createLocation(parsedBody, newSubAccountId);
+        }
+        if (queryParams?.createSite !== 'false') {
+            createSiteResponse = await createSite(parsedBody, newSubAccountId);
+        }
     }
     catch (error) {
         return new Response(error.message, null, error.statusCode);
@@ -120,16 +129,16 @@ const handlePost = async (body) => {
 
     const resp = {
         createAccountResponse: {
-            data: createAccountResponse.data,
-            status: createAccountResponse.status,
+            data: createAccountResponse?.data || 'Account creation skipped',
+            status: createAccountResponse?.status || 304,
         },
         createLocationResponse: {
-            data: createLocationResponse.data,
-            status: createLocationResponse.status,
+            data: createLocationResponse.data || 'Location creation skipped',
+            status: createLocationResponse.status || 304,
         },
         createSiteResponse: {
-            data: createSiteResponse.data,
-            status: createSiteResponse.status,
+            data: createSiteResponse?.data || 'Site creation skipped',
+            status: createSiteResponse?.status || 304,
         }
     }
 
@@ -139,11 +148,11 @@ const handlePost = async (body) => {
 }
 
 export default async function createAccount(request) {
-    const { body, method } = request;
+    const { body, method, queryParams } = request;
 
     switch (method) {
         case "POST":
-            return handlePost(body);
+            return handlePost(body, queryParams);
         default:
             return new Response("Method not allowed", null, 405);
     }
