@@ -4,7 +4,8 @@ import type { Message } from "@yext/chat-core";
 import cx from "classnames";
 import { HandThumbUpIcon, HandThumbDownIcon } from "@heroicons/react/20/solid";
 import { Transition } from "@headlessui/react";
-import { Markdown } from "@yext/react-components";
+// import { Markdown } from "@yext/react-components";
+const Markdown = React.lazy(() => import("@yext/react-components"));
 
 const formatUglyServerTimestamp = (timestamp: number | string) => {
   if (typeof timestamp === "string") {
