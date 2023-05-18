@@ -26,6 +26,7 @@ const AccountForm = () => {
       createAccount({
         businessName,
         subAccountId: accountId,
+        countryCode: "US",
         location: {
           address,
           city,

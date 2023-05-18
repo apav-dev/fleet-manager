@@ -35,6 +35,7 @@ export const fetchFleetStatuses = async (): Promise<
 export const createAccount = async (request: {
   businessName: string;
   subAccountId: string;
+  countryCode: string;
   location: {
     address: string;
     city: string;
