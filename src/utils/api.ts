@@ -37,10 +37,10 @@ export const createAccount = async (request: {
   subAccountId: string;
   countryCode: string;
   location: {
-    address: string;
+    line1: string;
     city: string;
-    state: string;
-    zip: string;
+    region: string;
+    postalCode: string;
     countryCode: string;
   };
   sites: {

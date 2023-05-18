@@ -28,10 +28,10 @@ const AccountForm = () => {
         subAccountId: accountId,
         countryCode: "US",
         location: {
-          address,
+          line1: address,
           city,
-          state,
-          zip,
+          region: state,
+          postalCode: zip,
           countryCode: "US",
         },
         sites: [
