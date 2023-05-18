@@ -2,7 +2,7 @@ const V = "20220101";
 const YEXT_API_KEY = "371ba6333664664048b449c5917ecb56";
 const createAccountEndpoint = `https://api.yext.com/v2/accounts/me/createsubaccount?v=${V}&api_key=${YEXT_API_KEY}`;
 const rarEndpoint = `https://api.yext.com/v2/accounts/me/resourcesapplyrequests?v=${V}&api_key=${YEXT_API_KEY}`
-const OPENAI_API_KEY = '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';
+const OPENAI_API_KEY = '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'
 const OPEN_AI_URL = 'https://api.openai.com/v1/chat/completions';
 
 
@@ -59,9 +59,9 @@ async function createSubAccount(body, newSubAccountId) {
     return await postRequest(createAccountEndpoint, requestBody)
 }
 
-async function createLocation(body) {
+async function createLocation(body, subAccountId) {
 
-    const { businessName, address, hours, subAccountId } = body
+    const { businessName, address, hours } = body
     const url = buildLocationURL(subAccountId);
     const formattedAddress = await formAddress(address)
     const formattedHours = await formHours(hours)
@@ -109,7 +109,6 @@ async function createSite(body: any, subAccountId) {
 }
 
 const handlePost = async (body, queryParams) => {
-    console.log(queryParams)
 
 
 
@@ -124,7 +123,7 @@ const handlePost = async (body, queryParams) => {
             createAccountResponse = await createSubAccount(parsedBody, newSubAccountId);
         }
         if (queryParams?.createLocation !== 'false') {
-            createLocationResponse = await createLocation(parsedBody);
+            createLocationResponse = await createLocation(parsedBody, newSubAccountId);
         }
         if (queryParams?.createSite !== 'false') {
             createSiteResponse = await createSite(parsedBody, newSubAccountId);
@@ -184,9 +183,9 @@ async function formAddress(address: string) {
             })
         });
 
+        console.log("data", response)
         const data = await response.json();
         const completion = data.choices[0].message.content;
-        console.log("address completion", completion)
 
         // Parse the completion as JSON
         const parsedCompletion = JSON.parse(completion);
@@ -297,4 +296,4 @@ const hoursFormat = `"hours": {
       ]
     }
   }`
-// add account
+
