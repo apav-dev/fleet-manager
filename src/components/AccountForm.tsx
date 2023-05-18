@@ -8,14 +8,14 @@ import { createAccount } from "../utils/api";
 const AccountForm = () => {
   const [businessName, setBusinessName] = useState("");
   const [accountId, setAccountId] = useState("");
-  const [address, setAddress] = useState("");
+  const [line1, setLine1] = useState("");
   const [city, setCity] = useState("");
   const [state, setState] = useState("");
   const [zip, setZip] = useState("");
 
   const isFormValid = () => {
     // check if there are values for everything
-    if (businessName && accountId && address && city && state && zip) {
+    if (businessName && accountId && line1 && city && state && zip) {
       return false;
     }
     return true;
@@ -27,8 +27,8 @@ const AccountForm = () => {
         businessName,
         subAccountId: accountId,
         countryCode: "US",
-        location: {
-          line1: address,
+        address: {
+          line1: line1,
           city,
           region: state,
           postalCode: zip,
@@ -75,8 +75,8 @@ const AccountForm = () => {
         {/* address */}
         <FormInput
           label="Address"
-          value={address}
-          onChange={(e) => setAddress(e.target.value)}
+          value={line1}
+          onChange={(e) => setLine1(e.target.value)}
           placeholder="Enter an address"
         />
         {/* city */}
