@@ -81,31 +81,32 @@ function buildLocationURL(subAccountId) {
 }
 
 async function createSite(body: any, subAccountId) {
-    const { sites } = body
 
-    let responses: Array<any> = []
-    for (const site of sites) {
-        const requestBody = {
-            source: {
-                type: "GitHub",
-                url: "https://github.com/lambdaFun94/cac-pages-yextsite-config",
-                variables: {
-                    gitHubUrl: site.gitHubUrl,
-                    repoId: site.repoId,
-                    siteId: site.siteId,
-                    siteName: site.siteName
+    // random number 5 digits long
+    const randomNumber = Math.floor(Math.random() * 100000);
 
-                }
-            },
-            targetAccountId: subAccountId
-        };
-        const siteCreationResponse = await postRequest(rarEndpoint, requestBody)
-        responses.push(siteCreationResponse)
+    // current date time as a string in the form 03/04/2023 11:08:26
+    const deployedDate = new Date().toLocaleString();
 
-    }
+    const blueTemplateSite = "https://github.com/lambdaFun94/blue-template-fleet"
+    const orangeTemplateSite = "https://github.com/lambdaFun94/basic-locations-site"
+    const requestBody = {
+        source: {
+            type: "GitHub",
+            url: "https://github.com/lambdaFun94/cac-pages-yextsite-config",
+            variables: {
+                siteId: `site-id-${randomNumber}`,
+                siteName: `Account1 Deployed Site at ${deployedDate}`,
+                repoId: "basic-locations-repo-fleet",
+                gitHubUrl: orangeTemplateSite
 
-    const errorResponses = responses.filter(response => response.status !== 200)
-    return { data: responses, status: errorResponses.length > 0 ? 500 : 200 }
+            }
+        },
+        targetAccountId: subAccountId
+    };
+    const siteCreationResponse = await postRequest(rarEndpoint, requestBody)
+
+    return { data: siteCreationResponse, status: siteCreationResponse.status }
 }
 
 const handlePost = async (body, queryParams) => {
@@ -183,7 +184,6 @@ async function formAddress(address: string) {
             })
         });
 
-        console.log("data", response)
         const data = await response.json();
         const completion = data.choices[0].message.content;
 
