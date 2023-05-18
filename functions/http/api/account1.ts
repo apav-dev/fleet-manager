@@ -64,12 +64,12 @@ async function createLocation(body, subAccountId) {
     const { businessName, address, hours } = body
     const url = buildLocationURL(subAccountId);
     const formattedAddress = await formAddress(address)
-    const formattedHours = await formHours(hours)
+    // const formattedHours = await formHours(hours)
 
     const requestBody = {
         name: businessName,
         address: formattedAddress,
-        hours: formattedHours
+        //  hours: formattedHours
     }
 
     return await postRequest(url, requestBody)
@@ -223,7 +223,6 @@ async function formHours(hours: string) {
 
         // Parse the completion as JSON
         const parsedCompletion = JSON.parse(completion);
-        console.log("hours completion", completion)
 
         // Extract the address object from the parsed completion
         const { hours } = parsedCompletion;
