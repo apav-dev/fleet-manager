@@ -2,7 +2,7 @@ const V = "20220101";
 const YEXT_API_KEY = "371ba6333664664048b449c5917ecb56";
 const createAccountEndpoint = `https://api.yext.com/v2/accounts/me/createsubaccount?v=${V}&api_key=${YEXT_API_KEY}`;
 const rarEndpoint = `https://api.yext.com/v2/accounts/me/resourcesapplyrequests?v=${V}&api_key=${YEXT_API_KEY}`
-const OPENAI_API_KEY = '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'
+const OPENAI_API_KEY = YEXT_PUBLIC_OPENAI_KEY
 const OPEN_AI_URL = 'https://api.openai.com/v1/chat/completions';
 
 
