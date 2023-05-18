@@ -18,6 +18,7 @@ import { useEffect, useState } from "react";
 import TransitionContainer from "../components/TransitionContainer";
 import { fetchSubAccounts } from "../utils/api";
 import Chat from "../components/Chat";
+import AccountForm from "../components/AccountForm";
 
 export const getPath: GetPath<TemplateRenderProps> = () => {
   return `index.html`;
@@ -42,7 +43,12 @@ export const transformProps: TransformProps<TemplateProps> = async (data) => {
   };
 };
 
-type Screen = "select-flow" | "chat" | "select-account" | "deploying";
+type Screen =
+  | "select-flow"
+  | "chat"
+  | "select-account"
+  | "deploying"
+  | "account-form";
 
 const FleetManager: Template<TemplateRenderProps> = ({
   document,
@@ -56,19 +62,18 @@ const FleetManager: Template<TemplateRenderProps> = ({
   useEffect(() => {
     if (hash === "#select-flow" && screenType !== "select-flow") {
       setScreenType("select-flow");
-      // remove hash from url
       window.history.replaceState(null, "", window.location.pathname);
     } else if (hash === "#deploying" && screenType !== "deploying") {
       setScreenType("deploying");
-      // remove hash from url
       window.history.replaceState(null, "", window.location.pathname);
     } else if (hash === "#select-account" && screenType !== "select-account") {
       setScreenType("select-account");
-      // remove hash from url
       window.history.replaceState(null, "", window.location.pathname);
     } else if (hash === "#chat" && screenType !== "chat") {
       setScreenType("chat");
-      // remove hash from url
+      window.history.replaceState(null, "", window.location.pathname);
+    } else if (hash === "#account-form" && screenType !== "account-form") {
+      setScreenType("account-form");
       window.history.replaceState(null, "", window.location.pathname);
     }
   }, [hash]);
@@ -82,7 +87,7 @@ const FleetManager: Template<TemplateRenderProps> = ({
         </h2>
       </div>
       <TransitionContainer show={screenType === "select-flow"}>
-        <div className="mt-8 flex justify-between sm:mx-auto sm:w-full sm:max-w-md ">
+        <div className="mt-8 flex justify-between space-x-6 sm:mx-auto sm:w-full sm:max-w-md ">
           <button
             className="mt-6 w-44 h-20 border-2 rounded-md bg-white font-semibold hover:border-indigo-600"
             onClick={() => {
@@ -99,6 +104,14 @@ const FleetManager: Template<TemplateRenderProps> = ({
           >
             Deploy Sites
           </button>
+          <button
+            className="mt-6 w-40 h-20 border-2 rounded-md bg-white font-semibold hover:border-indigo-600"
+            onClick={() => {
+              window.location.hash = "account-form";
+            }}
+          >
+            Account Form
+          </button>
         </div>
       </TransitionContainer>
       <TransitionContainer show={screenType === "select-account"}>
@@ -109,6 +122,9 @@ const FleetManager: Template<TemplateRenderProps> = ({
       </TransitionContainer>
       <TransitionContainer show={screenType === "chat"}>
         <Chat />
+      </TransitionContainer>
+      <TransitionContainer show={screenType === "account-form"}>
+        <AccountForm />
       </TransitionContainer>
     </Main>
   );

@@ -31,3 +31,31 @@ export const fetchFleetStatuses = async (): Promise<
   const response = await fetch(`/api/deploys`);
   return response.json();
 };
+
+export const createAccount = async (request: {
+  businessName: string;
+  subAccountId: string;
+  location: {
+    address: string;
+    city: string;
+    state: string;
+    zip: string;
+    countryCode: string;
+  };
+  sites: {
+    gitHubUrl: string;
+    repoId: string;
+    siteId: string;
+    siteName: string;
+  }[];
+}) => {
+  // post request to /api/account with json body
+  const response = await fetch(`/api/account`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(request),
+  });
+  return response.json();
+};
