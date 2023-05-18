@@ -4,10 +4,7 @@ import type { Message } from "@yext/chat-core";
 import cx from "classnames";
 import { HandThumbUpIcon, HandThumbDownIcon } from "@heroicons/react/20/solid";
 import { Transition } from "@headlessui/react";
-// TODO: Remove and replace with @yext/react-components Markdown component
-import NoSsr from "@mui/base/NoSsr";
-// Import reactmarkdown lazily
-const ReactMarkdown = React.lazy(() => import("react-markdown"));
+import { Markdown } from "@yext/react-components";
 
 const formatUglyServerTimestamp = (timestamp: number | string) => {
   if (typeof timestamp === "string") {
@@ -112,11 +109,7 @@ export default function MessageBubble({
               message.source === "BOT" ? "text-gray-900" : "text-white"
             )}
           >
-            <NoSsr>
-              <Suspense fallback="">
-                <ReactMarkdown>{messageText}</ReactMarkdown>
-              </Suspense>
-            </NoSsr>
+            <Markdown content={messageText} />
           </div>
           {explanation && (
             <div className="text-xs text-gray-600 mt-2 pt-2 border-t border-gray-300">

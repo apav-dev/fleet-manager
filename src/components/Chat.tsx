@@ -4,6 +4,7 @@ import { useChatState, useChatActions } from "@yext/chat-headless-react";
 import MessageBubble from "./MessageBubble";
 import { FaCircle, FaExclamationTriangle, FaArrowUp } from "react-icons/fa";
 import { Transition } from "@headlessui/react";
+import Container from "./Container";
 
 export default function ChatPanel() {
   const chat = useChatActions();
@@ -40,14 +41,20 @@ export default function ChatPanel() {
 
   useEffect(() => {
     if (bottomDivRef.current) {
-      bottomDivRef.current.scrollIntoView({ behavior: "smooth" });
+      setTimeout(() => {
+        bottomDivRef.current?.scrollIntoView({ behavior: "smooth" });
+      }, 100); // Adjust this delay as needed
     }
-  }, [messages]);
+  }, [messages, loading]);
 
   return (
-    <>
-      <div className="w-full h-full flex flex-col overflow-auto">
-        <div className="mx-auto max-w-5xl mt-auto w-full flex flex-col gap-y-6 py-2 mb-28 px-4">
+    <Container
+      customCssClasses={{
+        innerContainer: "bg-gray-300",
+      }}
+    >
+      <div className="w-full  flex flex-col overflow-auto border bg-white">
+        <div className="mx-auto max-w-5xl h-[600px] mt-auto w-full flex flex-col gap-y-6 py-2 mb-28 px-4">
           {messages.map((message, index) => (
             <MessageBubble key={index} index={index} message={message} />
           ))}
@@ -58,7 +65,7 @@ export default function ChatPanel() {
               enter="transition-opacity duration-500"
               enterFrom="opacity-0"
               enterTo="opacity-100"
-              className="w-fit flex gap-1 rounded-md p-2 text-[8px] text-gray-500"
+              className="w-fit flex gap-1 rounded-3xl p-3 text-[8px] text-gray-500 bg-gray-100"
             >
               <FaCircle
                 className="animate-bounce"
@@ -89,11 +96,11 @@ export default function ChatPanel() {
               <div className="">Oops, something went wrong.</div>
             </Transition>
           )}
-          <div ref={bottomDivRef} />
+          <div className="pb-2" ref={bottomDivRef} />
         </div>
       </div>
-      <div className="flex flex-row absolute w-full bottom-0 bg-white/25 backdrop-blur-lg border-t border-white py-4">
-        <div className="w-full max-w-5xl flex flex-row mx-auto gap-x-2 relative px-4">
+      <div className="flex flex-row  w-full bottom-0 bg-gray-300 backdrop-blur-lg border-t border-white py-4">
+        <div className="w-full max-w-5xl flex flex-row mx-auto gap-x-2 relative p-4">
           <input
             autoFocus
             disabled={loading}
@@ -116,6 +123,6 @@ export default function ChatPanel() {
           </Transition>
         </div>
       </div>
-    </>
+    </Container>
   );
 }
