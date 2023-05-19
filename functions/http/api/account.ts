@@ -98,7 +98,6 @@ async function createSite(body: any, subAccountId) {
 }
 
 const handlePost = async (body, queryParams) => {
-  console.log(queryParams);
 
   const parsedBody = JSON.parse(body);
   const newSubAccountId =
@@ -113,9 +112,9 @@ const handlePost = async (body, queryParams) => {
         parsedBody,
         newSubAccountId
       );
+      console.log(createAccountResponse)
     }
     if (queryParams?.createLocation !== "false") {
-      console.log(parsedBody);
       createLocationResponse = await createLocation(
         parsedBody,
         newSubAccountId

@@ -88,17 +88,21 @@ async function createSite(body: any, subAccountId) {
     // current date time as a string in the form 03/04/2023 11:08:26
     const deployedDate = new Date().toLocaleString();
 
+    const simpleCac = "https://github.com/lambdaFun94/cac-pages-yextsite-config"
+    const complexCac = "https://github.com/lambdaFun94/sub-account-config"
     const blueTemplateSite = "https://github.com/lambdaFun94/blue-template-fleet"
+    const blueTemplateSiteSimple = "https://github.com/lambdaFun94/blue-template-simple"
     const orangeTemplateSite = "https://github.com/lambdaFun94/basic-locations-site"
+
     const requestBody = {
         source: {
             type: "GitHub",
-            url: "https://github.com/lambdaFun94/cac-pages-yextsite-config",
+            url: simpleCac,
             variables: {
                 siteId: `site-id-${randomNumber}`,
                 siteName: `Account1 Deployed Site at ${deployedDate}`,
                 repoId: "basic-locations-repo-fleet",
-                gitHubUrl: orangeTemplateSite
+                gitHubUrl: blueTemplateSiteSimple
 
             }
         },
@@ -140,8 +144,8 @@ const handlePost = async (body, queryParams) => {
             status: createAccountResponse?.status || 304,
         },
         createLocationResponse: {
-            data: createLocationResponse.data || 'Location creation skipped',
-            status: createLocationResponse.status || 304,
+            data: createLocationResponse?.data || 'Location creation skipped',
+            status: createLocationResponse?.status || 304,
         },
         createSiteResponse: {
             data: createSiteResponse?.data || 'Site creation skipped',
