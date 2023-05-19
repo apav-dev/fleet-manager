@@ -61,7 +61,8 @@ async function createSubAccount(body, newSubAccountId) {
 
 async function createLocation(body, subAccountId) {
 
-    const { businessName, address, hours } = body
+    const { businessName, address, description, keywords } = body
+
     const url = buildLocationURL(subAccountId);
     const formattedAddress = await formAddress(address)
     // const formattedHours = await formHours(hours)
@@ -69,7 +70,8 @@ async function createLocation(body, subAccountId) {
     const requestBody = {
         name: businessName,
         address: formattedAddress,
-        //  hours: formattedHours
+        description: description,
+        // keywords: keywords
     }
 
     return await postRequest(url, requestBody)
@@ -100,7 +102,7 @@ async function createSite(body: any, subAccountId) {
             url: simpleCac,
             variables: {
                 siteId: `site-id-${randomNumber}`,
-                siteName: `Account1 Deployed Site at ${deployedDate}`,
+                siteName: `Chat Site (${deployedDate})`,
                 repoId: "basic-locations-repo-fleet",
                 gitHubUrl: blueTemplateSiteSimple
 
@@ -114,7 +116,6 @@ async function createSite(body: any, subAccountId) {
 }
 
 const handlePost = async (body, queryParams) => {
-
 
 
     const parsedBody = JSON.parse(body);
