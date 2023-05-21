@@ -19,6 +19,7 @@ import TransitionContainer from "../components/TransitionContainer";
 import { fetchSubAccounts } from "../utils/api";
 import Chat from "../components/Chat";
 import AccountForm from "../components/AccountForm";
+import YextLogo from "../assets/Yext_Logo.png";
 
 export const getPath: GetPath<TemplateRenderProps> = () => {
   return `index.html`;
@@ -81,36 +82,37 @@ const FleetManager: Template<TemplateRenderProps> = ({
   return (
     <Main>
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
-        <FleetIcon />
+        {/* <FleetIcon /> */}
+        <img className="h-24 w-24 mx-auto" src={YextLogo} />
         <h2 className="mt-6 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">
-          Yext Fleet Manager
+          Yext Platform Solutions
         </h2>
       </div>
       <TransitionContainer show={screenType === "select-flow"}>
         <div className="mt-8 flex justify-between space-x-6 sm:mx-auto sm:w-full sm:max-w-md ">
           <button
-            className="mt-6 w-44 h-20 border-2 rounded-md bg-white font-semibold hover:border-indigo-600"
+            className="mt-6 w-44 h-20 shadow-lg rounded-md bg-white font-semibold hover:border-indigo-600 hover:scale-105"
             onClick={() => {
               window.location.hash = "chat";
             }}
           >
-            Create New Account
+            Chat
           </button>
           <button
-            className="mt-6 w-40 h-20 border-2 rounded-md bg-white font-semibold hover:border-indigo-600"
+            className="mt-6 w-44 h-20 shadow-lg rounded-md bg-white font-semibold hover:border-indigo-600 hover:scale-105"
             onClick={() => {
               window.location.hash = "select-account";
             }}
           >
-            Deploy Sites
+            Fleet
           </button>
           <button
-            className="mt-6 w-40 h-20 border-2 rounded-md bg-white font-semibold hover:border-indigo-600"
+            className="mt-6 w-44 h-20 shadow-lg rounded-md bg-white font-semibold hover:border-indigo-600 hover:scale-105"
             onClick={() => {
               window.location.hash = "account-form";
             }}
           >
-            Account Form
+            Form
           </button>
         </div>
       </TransitionContainer>

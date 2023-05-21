@@ -5,6 +5,7 @@ import MessageBubble from "./MessageBubble";
 import { FaCircle, FaExclamationTriangle, FaArrowUp } from "react-icons/fa";
 import { Transition } from "@headlessui/react";
 import Container from "./Container";
+import { ArrowUpCircleIcon } from "@heroicons/react/20/solid";
 
 export default function ChatPanel() {
   const chat = useChatActions();
@@ -115,10 +116,10 @@ export default function ChatPanel() {
             enter="transition-opacity duration-500"
             enterFrom="opacity-0"
             enterTo="opacity-1"
-            className="rounded-full mx-auto text-white bg-blue-600 p-1.5 hover:bg-blue-800 disabled:bg-gray-100 text-xl absolute right-7 top-3 my-auto"
+            className="rounded-full mx-auto text-white disabled:bg-gray-100 text-xl absolute right-7 top-8 my-auto"
           >
             <button disabled={loading} onClick={sendMessage}>
-              <FaArrowUp />
+              <ArrowUpCircleIcon className="h-7 w-7 text-blue-600 hover:text-blue-800" />
             </button>
           </Transition>
         </div>
