@@ -13,7 +13,7 @@ const Main = ({ children }: MainProps) => {
     <ChatHeadlessProvider
       config={{
         apiKey: "9e90c1748f0a353e0718f1676330de98",
-        botId: "basic-location-bot",
+        botId: "chatbot-v3"
       }}
     >
       <QueryClientProvider client={queryClient}>
