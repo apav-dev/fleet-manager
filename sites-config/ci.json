@@ -4,12 +4,16 @@
       {
         "root": "dist",
         "pattern": "assets/**/*"
+      },
+      {
+        "root": "dist",
+        "pattern": "*"
       }
     ],
     "features": "sites-config/features.json",
     "plugins": [
       {
-        "pluginName": "Generator",
+        "pluginName": "PagesGenerator",
         "sourceFiles": [
           {
             "root": "dist/plugin",
@@ -17,11 +21,83 @@
           },
           {
             "root": "dist",
-            "pattern": "assets/{server,static,renderer}/**/*{.js,.css}"
+            "pattern": "assets/{server,static,renderer,render}/**/*{.js,.css}"
           }
         ],
         "event": "ON_PAGE_GENERATE",
-        "functionName": "Generate"
+        "functionName": "PagesGenerator"
+      },
+      {
+        "pluginName": "redis-42711",
+        "event": "API",
+        "functionName": "default",
+        "apiPath": "utils/redis",
+        "sourceFiles": [
+          {
+            "root": "dist/functions/redis-42711",
+            "pattern": "*{.js,.ts}"
+          }
+        ]
+      },
+      {
+        "pluginName": "site-status-44687",
+        "event": "API",
+        "functionName": "default",
+        "apiPath": "api/site-status",
+        "sourceFiles": [
+          {
+            "root": "dist/functions/site-status-44687",
+            "pattern": "*{.js,.ts}"
+          }
+        ]
+      },
+      {
+        "pluginName": "deploys-52733",
+        "event": "API",
+        "functionName": "default",
+        "apiPath": "api/deploys",
+        "sourceFiles": [
+          {
+            "root": "dist/functions/deploys-52733",
+            "pattern": "*{.js,.ts}"
+          }
+        ]
+      },
+      {
+        "pluginName": "deploy-53942",
+        "event": "API",
+        "functionName": "default",
+        "apiPath": "api/deploy",
+        "sourceFiles": [
+          {
+            "root": "dist/functions/deploy-53942",
+            "pattern": "*{.js,.ts}"
+          }
+        ]
+      },
+      {
+        "pluginName": "chat-account-82055",
+        "event": "API",
+        "functionName": "default",
+        "apiPath": "api/chat-account",
+        "sourceFiles": [
+          {
+            "root": "dist/functions/chat-account-82055",
+            "pattern": "*{.js,.ts}"
+          }
+        ]
+      },
+      {
+        "pluginName": "account-73284",
+        "event": "API",
+        "functionName": "default",
+        "apiPath": "api/account",
+        "sourceFiles": [
+          {
+            "root": "dist/functions/account-73284",
+            "pattern": "*{.js,.ts}"
+          }
+        ]
       }
     ]
   },

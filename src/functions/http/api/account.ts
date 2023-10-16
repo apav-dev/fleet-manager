@@ -3,31 +3,6 @@ const API_KEY = "371ba6333664664048b449c5917ecb56";
 const createAccountEndpoint = `https://api.yext.com/v2/accounts/me/createsubaccount?v=${V}&api_key=${API_KEY}`;
 const rarEndpoint = `https://api.yext.com/v2/accounts/me/resourcesapplyrequests?v=${V}&api_key=${API_KEY}`;
 
-class Response {
-  body: string;
-  headers: any;
-  statusCode: number;
-
-  constructor(body: string, headers: any, statusCode: number) {
-    this.body = body;
-    this.headers = headers || {
-      "Content-Type": "application/json",
-      "Access-Control-Allow-Origin": "http://localhost:5173",
-    };
-    this.statusCode = statusCode;
-  }
-}
-
-class HttpError {
-  message: any;
-  statusCode: number;
-
-  constructor(errorMessage: any, statusCode: number) {
-    this.message = errorMessage;
-    this.statusCode = statusCode;
-  }
-}
-
 async function postRequest(url, body): Promise<any> {
   const response = await fetch(url, {
     method: "POST",
@@ -98,7 +73,6 @@ async function createSite(body: any, subAccountId) {
 }
 
 const handlePost = async (body, queryParams) => {
-
   const parsedBody = JSON.parse(body);
   const newSubAccountId =
     parsedBody.businessName + "-" + parsedBody.subAccountId;
@@ -112,7 +86,7 @@ const handlePost = async (body, queryParams) => {
         parsedBody,
         newSubAccountId
       );
-      console.log(createAccountResponse)
+      console.log(createAccountResponse);
     }
     if (queryParams?.createLocation !== "false") {
       createLocationResponse = await createLocation(

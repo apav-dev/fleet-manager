@@ -21,7 +21,7 @@ const FleetForm = ({ subAccounts }: FleetFormProps) => {
   const deployFleetMutation = useMutation({
     mutationFn: () =>
       deployFleet(
-        selectedSubAccountIds.map((said) => ({ subAccountId: said }))
+        selectedSubAccountIds.map((subAccountId) => ({ subAccountId }))
       ),
   });
 

@@ -17,7 +17,7 @@ import useHash from "../hooks/useHash";
 import { useEffect, useState } from "react";
 import TransitionContainer from "../components/TransitionContainer";
 import { fetchSubAccounts } from "../utils/api";
-import Chat from "../components/Chat";
+// import Chat from "../components/Chat";
 import AccountForm from "../components/AccountForm";
 import YextLogo from "../assets/Yext_Logo.png";
 
@@ -122,9 +122,9 @@ const FleetManager: Template<TemplateRenderProps> = ({
       <TransitionContainer show={screenType === "deploying"}>
         <FleetDeploy subAccounts={subAccounts} />
       </TransitionContainer>
-      <TransitionContainer show={screenType === "chat"}>
+      {/* <TransitionContainer show={screenType === "chat"}>
         <Chat />
-      </TransitionContainer>
+      </TransitionContainer> */}
       <TransitionContainer show={screenType === "account-form"}>
         <AccountForm />
       </TransitionContainer>
