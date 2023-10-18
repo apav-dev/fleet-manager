@@ -17,8 +17,6 @@ const updateKV = async (
 ): Promise<SitesHttpResponse> => {
   const { body, method } = request;
 
-  console.log("Received request: ", request);
-
   if (method !== "POST") {
     return { body: "Method not allowed", headers: {}, statusCode: 405 };
   }
@@ -27,23 +25,31 @@ const updateKV = async (
     | ResourcesWebhookPayload
     | DeployWebhookPayload;
 
-  console.log("Received webhook payload: ", webhookPayload);
-
   const { meta } = webhookPayload;
-  const subAccountId = webhookPayload.meta.accountId;
 
   // Parent ID is hardcoded for now
+  let subAccountId = "";
   switch (meta.eventType) {
     case "RESOURCE_APPLY_REQUEST_COMPLETE":
+      console.log("RESOURCE_APPLY_REQUEST_COMPLETE");
+      // webhookPayload.meta.accountId will be present for RAR Successes
+      subAccountId = webhookPayload.meta.accountId as string;
       await redis.hset(`3873282/${subAccountId}`, "rar_complete");
       break;
     case "DEPLOY_COMPLETE":
+      // webhookPayload.meta.appSpecificAccountId will NOT BE present for deploy completes
+      console.log("DEPLOY_COMPLETE");
+      subAccountId = webhookPayload.deploy.businessName;
       await redis.hset(`3873282/${subAccountId}`, "deploy_complete");
       break;
     case "RESOURCE_APPLY_REQUEST_FAILURE":
+      // webhookPayload.meta.accountId will be present for RAR Failures
+      subAccountId = webhookPayload.meta.accountId as string;
       await redis.hset(`3873282/${subAccountId}`, "rar_failure");
       break;
     case "DEPLOY_FAILURE":
+      // webhookPayload.meta.accountId will be present for Deploy Failures
+      subAccountId = webhookPayload.meta.accountId as string;
       await redis.hset(`3873282/${subAccountId}`, "deploy_failure");
       break;
     default:
