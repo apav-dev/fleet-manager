@@ -14,7 +14,9 @@ const buildSiteRequestBody = (siteBody: SubAccountSiteConfig) => {
     siteId,
     siteName,
     repoId,
-    gitHubUrl,
+    repoUrl,
+    apiKey,
+    entityId,
   } = siteBody;
 
   // subAccountId is also called partner id in the platform
@@ -30,25 +32,25 @@ const buildSiteRequestBody = (siteBody: SubAccountSiteConfig) => {
     targetAccountId: stripped,
     source: {
       type: "GitHub",
-      url:
-        siteConfigRepoUrl ||
-        "https://github.com/lambdaFun94/cac-pages-yextsite-config",
+      url: siteConfigRepoUrl || "https://github.com/apav-dev/smb-pages-cac",
       variables: {
         siteId: siteId || `site-id-${randomNumber}`,
         siteName: siteName || `API Deployed Site at ${deployedDate}`,
-        repoId: repoId || "basic-locations-repo-fleet",
-        gitHubUrl: gitHubUrl || "github.com/lambdaFun94/basic-locations-site",
+        repoId: repoId || "basic-smb-starter",
+        repoUrl: "github.com/apav-dev/fleet-smb-starter",
+        entityId: entityId || "loc-1",
+        apiKey: apiKey || "",
       },
     },
   };
+  console.log("Built site request body: ", body);
   return body;
 };
 
-const handlePost = async (body: string, businessId: string) => {
+const handlePost = async (bodyStr: string, businessId: string) => {
   let accts: Array<SubAccountSiteConfig> = [];
   try {
-    accts = JSON.parse(body);
-    console.log("accts: ", accts);
+    accts = JSON.parse(bodyStr);
   } catch (err) {
     console.error(`Bad Request: `, err);
     return new Response(
@@ -57,7 +59,7 @@ const handlePost = async (body: string, businessId: string) => {
         *   siteConfigRepoUrl: string;
         *   siteId: string; 
         *   siteName: string;
-        *   repoId: string;
+        *   repo_id: string;
         *   gitHubUrl: string`,
       null,
       400
@@ -67,17 +69,16 @@ const handlePost = async (body: string, businessId: string) => {
   const accountStatuses: Account[] = [];
 
   // Send off request for each account to Yext
-  const deployPromises = accts.map(async (acct) => {
+  const rarPromises = accts.map(async (acct) => {
     try {
       const siteBody = buildSiteRequestBody(acct);
       const request = new PostRequest(siteBody);
+
       const response = await fetch(
         `https://api.yext.com/v2/accounts/me/resourcesapplyrequests?v=20231001&api_key=${YEXT_PUBLIC_YEXT_API_KEY}`,
         request
       );
       const jsonResponse = await response.json();
-
-      console.log("jsonResponse: ", jsonResponse);
 
       return new Response(
         JSON.stringify(jsonResponse),
@@ -94,17 +95,17 @@ const handlePost = async (body: string, businessId: string) => {
   });
 
   // Check if the requests succeeded or failed and update the account Statuses list accordingly
-  await Promise.allSettled(deployPromises).then((results) => {
+  await Promise.allSettled(rarPromises).then((results) => {
     results.forEach((result) => {
       if (result.status === "fulfilled") {
         const statusCode = result.value.statusCode;
         const jsonResponse = JSON.parse(result.value.body);
         if (statusCode === 200) {
+          console.log("RAR submitted successfully");
           accountStatuses.push({
             accountId: jsonResponse.response.targetAccountId,
             status: "rar_submitted",
           });
-          console.log("jsonResponse: ", jsonResponse);
         } else {
           accountStatuses.push({
             accountId: jsonResponse.targetAccountId,

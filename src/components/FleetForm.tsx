@@ -3,26 +3,26 @@ import { twMerge } from "tailwind-merge";
 import Container from "./Container";
 import { useMutation } from "@tanstack/react-query";
 import { deployFleet } from "../utils/api";
+import { SubAccountSiteConfig } from "../types/types";
 
 interface FleetFormProps {
   subAccounts: {
     name: string;
     partnerCustomerID: string;
     yextCustomerID: string;
+    locationID: string;
+    aPIKey: string;
   }[];
 }
 
 const FleetForm = ({ subAccounts }: FleetFormProps) => {
-  const [selectedSubAccountIds, setSelectedSubAccountIds] = useState<string[]>(
-    []
-  );
+  const [selectedSubAccounts, setSelectedSubAccounts] = useState<
+    SubAccountSiteConfig[]
+  >([]);
   const [template, setTemplate] = useState("");
 
   const deployFleetMutation = useMutation({
-    mutationFn: () =>
-      deployFleet(
-        selectedSubAccountIds.map((subAccountId) => ({ subAccountId }))
-      ),
+    mutationFn: () => deployFleet(selectedSubAccounts),
   });
 
   const handleDeploy = async (e: React.FormEvent) => {
@@ -127,14 +127,19 @@ const FleetForm = ({ subAccounts }: FleetFormProps) => {
                       className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600"
                       onChange={(e) => {
                         if (e.target.checked) {
-                          setSelectedSubAccountIds([
-                            ...selectedSubAccountIds,
-                            account.partnerCustomerID,
+                          setSelectedSubAccounts([
+                            ...selectedSubAccounts,
+                            {
+                              subAccountId: account.partnerCustomerID,
+                              entityId: account.locationID,
+                              apiKey: account.aPIKey,
+                            },
                           ]);
                         } else {
-                          setSelectedSubAccountIds(
-                            selectedSubAccountIds.filter(
-                              (said) => said !== account.partnerCustomerID
+                          setSelectedSubAccounts(
+                            selectedSubAccounts.filter(
+                              (said) =>
+                                said.subAccountId !== account.partnerCustomerID
                             )
                           );
                         }
@@ -151,10 +156,10 @@ const FleetForm = ({ subAccounts }: FleetFormProps) => {
             type="submit"
             className={twMerge(
               "flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600",
-              selectedSubAccountIds.length === 0 &&
+              selectedSubAccounts.length === 0 &&
                 "opacity-50 hover:bg-indigo-600"
             )}
-            disabled={selectedSubAccountIds.length === 0}
+            disabled={selectedSubAccounts.length === 0}
           >
             Deploy Fleet
           </button>

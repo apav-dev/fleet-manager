@@ -1,7 +1,12 @@
-import { DeployStatus, SubAccountEntity, Subaccount } from "../types/types";
+import {
+  DeployStatus,
+  SubAccountEntity,
+  SubAccountSiteConfig,
+  Subaccount,
+} from "../types/types";
 import { fetch } from "@yext/pages/util";
 
-export const deployFleet = async (subAccounts: Subaccount[]) => {
+export const deployFleet = async (subAccounts: SubAccountSiteConfig[]) => {
   try {
     await fetch(`/api/deploy/3873282`, {
       method: "POST",

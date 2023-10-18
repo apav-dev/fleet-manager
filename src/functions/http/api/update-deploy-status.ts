@@ -25,6 +25,8 @@ const updateKV = async (
     | ResourcesWebhookPayload
     | DeployWebhookPayload;
 
+  console.log("Received webhook payload: ", webhookPayload);
+
   const { meta } = webhookPayload;
 
   // Parent ID is hardcoded for now

@@ -25,6 +25,8 @@ export interface SubAccountEntity {
         name: string;
         partnerCustomerID: string;
         yextCustomerID: string;
+        locationID: string;
+        aPIKey: string;
       }[];
     }[];
     count: number;
@@ -164,7 +166,9 @@ export interface SubAccountSiteConfig {
   siteId?: string;
   siteName?: string;
   repoId?: string;
-  gitHubUrl?: string;
+  repoUrl?: string;
+  entityId?: string;
+  apiKey?: string;
 }
 
 export type Account = {
