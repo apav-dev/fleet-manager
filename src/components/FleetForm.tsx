@@ -4,6 +4,8 @@ import Container from "./Container";
 import { useMutation } from "@tanstack/react-query";
 import { deployFleet } from "../utils/api";
 import { SubAccountSiteConfig } from "../types/types";
+import { clsx } from "clsx";
+import { CheckIcon } from "@heroicons/react/20/solid";
 
 interface FleetFormProps {
   subAccounts: {
@@ -15,11 +17,41 @@ interface FleetFormProps {
   }[];
 }
 
+const tiers = [
+  {
+    name: "Standard Site",
+    id: "tier-personal",
+    href: "#",
+    priceMonthly: "$39",
+    description:
+      "The perfect plan if you're just getting started with our product.",
+    features: ["SEO-performant site deployed on Global CDN"],
+    iFrameLink:
+      "https://ipuk5b5pdo-131277-d.sbx.preview.pagescdn.com/4429845563501038261",
+  },
+  {
+    name: "Elite Site",
+    id: "tier-team",
+    href: "#",
+    priceMonthly: "$99",
+    description: "A plan that scales with your rapidly growing business.",
+    features: [
+      "SEO-performant site deployed on Global CDN",
+      "Reviews and Review Submissions",
+      "Social Posts",
+      "AI-Powered Chat Bot",
+    ],
+    iFrameLink:
+      "https://supremely-federal-ferret.pgsdemo.com/locations/1633753833297642956",
+  },
+];
+
 const FleetForm = ({ subAccounts }: FleetFormProps) => {
   const [selectedSubAccounts, setSelectedSubAccounts] = useState<
     SubAccountSiteConfig[]
   >([]);
   const [template, setTemplate] = useState("");
+  const [featuredTier, setFeaturedTier] = useState(0);
 
   const deployFleetMutation = useMutation({
     mutationFn: () => deployFleet(selectedSubAccounts),
@@ -43,59 +75,65 @@ const FleetForm = ({ subAccounts }: FleetFormProps) => {
         >
           Select a Template
         </label>
-
-        <div className="grid mt-2 grid-cols-1 gap-y-10 gap-x-6 sm:grid-cols-2 xl:gap-x-8 h-full">
+      </section>
+      <div className="mx-auto mt-10  grid max-w-lg grid-cols-1 items-center gap-y-6 sm:gap-y-0 lg:max-w-4xl lg:grid-cols-2">
+        {tiers.map((tier, tierIdx) => (
           <div
-            onClick={() => setTemplate("orange")}
-            className={twMerge(
-              "border-2 border-gray-300 p-2 hover:opacity-75",
-              template === "orange" && "border-indigo-600"
+            onClick={() => setFeaturedTier(tierIdx)}
+            key={tier.id}
+            className={clsx(
+              "transition-transform duration-500 transform",
+              featuredTier === tierIdx
+                ? "relative bg-white shadow-2xl scale-110 z-10"
+                : "bg-white/60 sm:mx-8 lg:mx-0 z-0",
+              featuredTier === tierIdx
+                ? ""
+                : tierIdx === 0
+                ? "rounded-t-3xl sm:rounded-b-none lg:rounded-tr-none lg:rounded-bl-3xl"
+                : "sm:rounded-t-none lg:rounded-tr-3xl lg:rounded-bl-none",
+              "rounded-3xl p-8 ring-1 ring-gray-900/10 h-[780px] sm:p-10"
             )}
           >
-            <div className="w-full overflow-hidden rounded-lg h-80">
+            <div className="w-full overflow-hidden rounded mb-4 border h-80">
               <iframe
-                src={
-                  "https://qqahwmjhg3-131278-d.sbx.preview.pagescdn.com/6257137882478077830"
-                }
+                src={tier.iFrameLink}
                 className="h-full w-full object-cover object-center"
               ></iframe>
             </div>
-            <div className="mt-8 flex items-center justify-between text-base font-medium text-gray-900">
-              <h3>Orange Template</h3>
-              <p>$5</p>
-            </div>
-            <p className="mt-1 text-sm italic text-gray-500">Orange Template</p>
+            <h3
+              id={tier.id}
+              className="text-base font-semibold leading-7 text-indigo-600"
+            >
+              {tier.name}
+            </h3>
+
+            {/* <p className="mt-6 text-base leading-7 text-gray-600">
+              {tier.description}
+            </p> */}
+            <ul
+              role="list"
+              className="mt-4 space-y-3 text-sm leading-6 text-gray-600 "
+            >
+              {tier.features.map((feature) => (
+                <li key={feature} className="flex gap-x-3">
+                  <CheckIcon
+                    className="h-6 w-5 flex-none text-indigo-600"
+                    aria-hidden="true"
+                  />
+                  {feature}
+                </li>
+              ))}
+            </ul>
           </div>
-          <div
-            onClick={() => setTemplate("blue")}
-            className={twMerge(
-              "border-2 border-gray-300 p-2 hover:opacity-75",
-              template === "blue" && "border-indigo-600"
-            )}
-          >
-            <div className="w-full overflow-hidden rounded-lg h-80">
-              <iframe
-                src={
-                  "https://ipuk5b5pdo-131277-d.sbx.preview.pagescdn.com/4429845563501038261"
-                }
-                className="h-full w-full object-cover object-center group-hover:opacity-75"
-              ></iframe>
-            </div>
-            <div className="mt-8 flex items-center justify-between text-base font-medium text-gray-900">
-              <h3>Blue Template</h3>
-              <p>$1000000</p>
-            </div>
-            <p className="mt-1 text-sm italic text-gray-500">Blue Template</p>
-          </div>
-        </div>
-      </section>
+        ))}
+      </div>
       <form
         className="space-y-6"
         action="#"
         method="POST"
         onSubmit={handleDeploy}
       >
-        <div>
+        <div className="mt-20">
           <fieldset>
             <legend className="text-base font-semibold leading-6 text-gray-900">
               Sub Account Ids

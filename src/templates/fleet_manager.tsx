@@ -58,7 +58,7 @@ const FleetManager: Template<TemplateRenderProps> = ({
 
   const hash = useHash();
 
-  const [screenType, setScreenType] = useState<Screen>("select-flow");
+  const [screenType, setScreenType] = useState<Screen>("select-account");
 
   useEffect(() => {
     if (hash === "#select-flow" && screenType !== "select-flow") {
@@ -84,9 +84,9 @@ const FleetManager: Template<TemplateRenderProps> = ({
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
         {/* <FleetIcon /> */}
         <img className="h-24 w-24 mx-auto" src={YextLogo} />
-        <h2 className="mt-6 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">
+        <h1 className="mt-6 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">
           Yext Platform Solutions
-        </h2>
+        </h1>
       </div>
       <TransitionContainer show={screenType === "select-flow"}>
         <div className="mt-8 flex justify-between space-x-6 sm:mx-auto sm:w-full sm:max-w-md ">

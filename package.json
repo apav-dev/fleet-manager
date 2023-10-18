@@ -25,6 +25,7 @@
     "@yext/search-headless-react": "^2.1.0",
     "@yext/search-ui-react": "^1.1.0",
     "@yext/sites-components": "^1.0.0-rc.5",
+    "clsx": "^2.0.0",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-icons": "^4.8.0",
