@@ -18,7 +18,14 @@ const hgetall = async (accountId: string) => {
       accounts.push({ accountId, status });
     }
 
-    return new Response(JSON.stringify(accounts), null, 200);
+    return new Response(
+      JSON.stringify(accounts),
+      {
+        "Content-Type": "application/json",
+        "Cache-Control": "no-store",
+      },
+      200
+    );
   } catch (err) {
     console.error(`Error fetching the Hash with the key ${accountId}: ${err}`);
     return new Response("Internal Server Error: Consult Logs", null, 500);
