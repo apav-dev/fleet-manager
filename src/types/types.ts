@@ -64,7 +64,7 @@ export interface ApiResourcesRequest {
 export interface Meta {
   uuid: string;
   timestamp: number;
-  accountId?: string;
+  accountId: string;
   appSpecificAccountId: string;
   eventType: WebhookEventType;
 }

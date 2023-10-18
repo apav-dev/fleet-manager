@@ -123,9 +123,7 @@ const handlePost = async (bodyStr: string, businessId: string) => {
 
   // Update the KV store with the account statuses
   const hashPromises = accountStatuses.map(async (account) => {
-    await redis.hset(`${businessId}/${account.accountId}`, {
-      status: account.status,
-    });
+    await redis.hset(`${businessId}/${account.accountId}`, account.status);
   });
 
   // Wait for all the hash promises to resolve

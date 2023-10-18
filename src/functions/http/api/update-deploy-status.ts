@@ -17,6 +17,8 @@ const updateKV = async (
 ): Promise<SitesHttpResponse> => {
   const { body, method } = request;
 
+  console.log("Received request: ", request);
+
   if (method !== "POST") {
     return { body: "Method not allowed", headers: {}, statusCode: 405 };
   }
@@ -28,31 +30,21 @@ const updateKV = async (
   console.log("Received webhook payload: ", webhookPayload);
 
   const { meta } = webhookPayload;
+  const subAccountId = webhookPayload.meta.accountId;
 
   // Parent ID is hardcoded for now
-  let subAccountId = "";
   switch (meta.eventType) {
     case "RESOURCE_APPLY_REQUEST_COMPLETE":
-      // webhookPayload.meta.accountId will be present for RAR Successes
-      subAccountId = webhookPayload.meta.accountId as string;
-      await redis.hset(`3873282/${subAccountId}`, { status: "rar_complete" });
+      await redis.hset(`3873282/${subAccountId}`, "rar_complete");
       break;
     case "DEPLOY_COMPLETE":
-      // webhookPayload.meta.appSpecificAccountId will NOT BE present for deploy completes
-      subAccountId = webhookPayload.deploy?.businessName?.split("-")[3];
-      await redis.hset(`3873282/${subAccountId}`, {
-        status: "deploy_complete",
-      });
+      await redis.hset(`3873282/${subAccountId}`, "deploy_complete");
       break;
     case "RESOURCE_APPLY_REQUEST_FAILURE":
-      // webhookPayload.meta.accountId will be present for RAR Failures
-      subAccountId = webhookPayload.meta.accountId as string;
-      await redis.hset(`3873282/${subAccountId}`, { status: "rar_failure" });
+      await redis.hset(`3873282/${subAccountId}`, "rar_failure");
       break;
     case "DEPLOY_FAILURE":
-      // webhookPayload.meta.accountId will be present for Deploy Failures
-      subAccountId = webhookPayload.meta.accountId as string;
-      await redis.hset(`3873282/${subAccountId}`, { status: "deploy_failure" });
+      await redis.hset(`3873282/${subAccountId}`, "deploy_failure");
       break;
     default:
       return { body: "Event type not supported", headers: {}, statusCode: 400 };

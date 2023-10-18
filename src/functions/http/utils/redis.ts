@@ -9,7 +9,7 @@ const kvRequest = async (
   httpMethod: HttpMethod,
   kvMethod: KVMethod,
   key: string,
-  body?: Record<string, unknown>
+  value?: string
 ): Promise<KVResponse> => {
   const url = `${YEXT_PUBLIC_KV_BASE_URL}/${kvMethod}/${key}`;
 
@@ -20,8 +20,8 @@ const kvRequest = async (
     },
   };
 
-  if (body) {
-    request.body = JSON.stringify(body);
+  if (value) {
+    request.body = value;
   }
 
   try {
@@ -37,11 +37,8 @@ const redis = {
   hget: async (key: string): Promise<KVResponse> => {
     return await kvRequest("GET", "hget", key);
   },
-  hset: async (
-    key: string,
-    body: Record<string, unknown>
-  ): Promise<KVResponse> => {
-    return await kvRequest("PUT", "hset", key, body);
+  hset: async (key: string, value: string): Promise<KVResponse> => {
+    return await kvRequest("PUT", "hset", key, value);
   },
   hgetall: async (key: string): Promise<KVResponse> => {
     return await kvRequest("GET", "hgetall", key);
